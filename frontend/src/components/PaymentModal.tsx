@@ -1,0 +1,131 @@
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import { simulatePayment } from "../services/participants-api";
+import type { PaymentSimulationRequest } from "../types/participant";
+
+interface PaymentModalProps {
+  open: boolean;
+  onClose: () => void;
+  participantId: string;
+  onSuccess?: () => void;
+}
+
+export default function PaymentModal({
+  open,
+  onClose,
+  participantId,
+  onSuccess,
+}: PaymentModalProps) {
+  const [cardNumber, setCardNumber] = useState("");
+  const [expMonth, setExpMonth] = useState("");
+  const [expYear, setExpYear] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handlePay = async () => {
+    if (!participantId) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      const payload: PaymentSimulationRequest = {
+        cardNumber,
+        expMonth: parseInt(expMonth),
+        expYear: parseInt(expYear),
+        cardHolder,
+        cvv,
+      };
+
+      const result = await simulatePayment(participantId, payload);
+
+      if (result === "PAID") {
+        setMessage("Payment successful!");
+        onSuccess?.();
+        onClose();
+      } else {
+        setMessage("Payment failed. Please try again.");
+      }
+    } catch {
+      setMessage("Payment failed. Please check your card details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Simulate Payment</DialogTitle>
+      <DialogContent>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Demo cards: 4242424242424242 (valid), 4000000000000001 (invalid)
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            <TextField
+              fullWidth
+              label="Card Number"
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
+              placeholder="4242424242424242"
+            />
+          </Grid>
+          <Grid size={6}>
+            <TextField
+              fullWidth
+              label="Exp Month"
+              value={expMonth}
+              onChange={(e) => setExpMonth(e.target.value)}
+              placeholder="12"
+            />
+          </Grid>
+          <Grid size={6}>
+            <TextField
+              fullWidth
+              label="Exp Year"
+              value={expYear}
+              onChange={(e) => setExpYear(e.target.value)}
+              placeholder="2026"
+            />
+          </Grid>
+          <Grid size={8}>
+            <TextField
+              fullWidth
+              label="Card Holder"
+              value={cardHolder}
+              onChange={(e) => setCardHolder(e.target.value)}
+              placeholder="John Doe"
+            />
+          </Grid>
+          <Grid size={4}>
+            <TextField
+              fullWidth
+              label="CVV"
+              value={cvv}
+              onChange={(e) => setCvv(e.target.value)}
+              placeholder="123"
+            />
+          </Grid>
+        </Grid>
+        {message && <Typography sx={{ mt: 1 }}>{message}</Typography>}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          variant="contained"
+          onClick={handlePay}
+          disabled={loading || !participantId}
+        >
+          Pay
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

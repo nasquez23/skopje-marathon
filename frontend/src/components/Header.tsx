@@ -56,27 +56,19 @@ export default function Header() {
             </Link>
             <Link
               component={RouterLink}
-              to={PATHS.HOME}
+              to={PATHS.PARTICIPANT_STATUS}
               color="inherit"
               underline="hover"
             >
-              Race Series
+              Participant Status
             </Link>
             <Link
               component={RouterLink}
-              to={PATHS.HOME}
+              to={PATHS.PARTICIPANTS}
               color="inherit"
               underline="hover"
             >
-              Run For Charity
-            </Link>
-            <Link
-              component={RouterLink}
-              to={PATHS.HOME}
-              color="inherit"
-              underline="hover"
-            >
-              Results
+              Participants
             </Link>
           </Box>
 
