@@ -6,32 +6,49 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import Link from "@mui/material/Link";
 import { useAuth } from "../hooks/use-auth";
 import PATHS from "../constants/paths";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Drawer, Divider, Stack } from "@mui/material";
+import { useState } from "react";
 
 export default function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, isLoading } = useAuth();
+  const location = useLocation();
+  const [open, setOpen] = useState<boolean>(false);
+
+  const navLinks = [
+    { label: "Home", to: PATHS.HOME },
+    { label: "Participants", to: PATHS.PARTICIPANTS },
+    { label: "Check Status", to: PATHS.PARTICIPANT_STATUS },
+  ];
 
   return (
     <AppBar
       position="sticky"
       color="inherit"
       elevation={0}
-      sx={{ borderBottom: 1, borderColor: "divider", py: 0.5 }}
+      sx={{
+        pt: 1,
+      }}
     >
-      <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ gap: 2 }}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            sx={{ display: { xs: "inline-flex", md: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
+      <Container
+        maxWidth="xl"
+        sx={{
+          py: 2,
+          backgroundColor: "info.main",
+          borderRadius: 5,
+          mx: "auto",
+          width: "95%",
+        }}
+      >
+        <Toolbar
+          disableGutters
+          sx={{ gap: 2, justifyContent: "space-between" }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 800 }}>
             <Link
               component={RouterLink}
@@ -43,65 +60,134 @@ export default function Header() {
             </Link>
           </Typography>
 
-          <Box sx={{ flexGrow: 1 }} />
-
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-            <Link
-              component={RouterLink}
-              to={PATHS.HOME}
-              color="inherit"
-              underline="hover"
-            >
-              Home
-            </Link>
-            <Link
-              component={RouterLink}
-              to={PATHS.PARTICIPANT_STATUS}
-              color="inherit"
-              underline="hover"
-            >
-              Participant Status
-            </Link>
-            <Link
-              component={RouterLink}
-              to={PATHS.PARTICIPANTS}
-              color="inherit"
-              underline="hover"
-            >
-              Participants
-            </Link>
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+            {navLinks.map((l) => (
+              <Link
+                key={l.to}
+                component={RouterLink}
+                to={l.to}
+                color={location.pathname === l.to ? "primary" : "inherit"}
+                underline="hover"
+                sx={{ fontWeight: location.pathname === l.to ? 700 : 500 }}
+              >
+                {l.label}
+              </Link>
+            ))}
           </Box>
 
-          {isLoading ? (
-            <CircularProgress />
-          ) : !isAuthenticated ? (
-            <Box sx={{ display: "flex", gap: 1.5 }}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            sx={{ display: { xs: "inline-flex", md: "none" } }}
+            onClick={() => setOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1.5 }}>
+            {isLoading ? (
+              <CircularProgress />
+            ) : !isAuthenticated ? (
+              <Box sx={{ display: "flex", gap: 1.5 }}>
+                <Button
+                  variant="text"
+                  color="inherit"
+                  onClick={() => navigate(PATHS.LOGIN)}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate(PATHS.REGISTER)}
+                  sx={{ borderRadius: 9999 }}
+                >
+                  Register Now
+                </Button>
+              </Box>
+            ) : (
+              <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+                <Typography variant="body2" sx={{ mr: 1 }}>
+                  {`${user?.firstName} ${user?.lastName}`}
+                </Typography>
+                <Button variant="outlined" onClick={() => logout()}>
+                  Logout
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Toolbar>
+      </Container>
+
+      <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
+        <Box sx={{ width: 260, p: 2 }} role="presentation">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 1,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 800 }}>
+              Skopje Marathon
+            </Typography>
+            <IconButton onClick={() => setOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider />
+          <Stack spacing={1.5} sx={{ mt: 2 }}>
+            {navLinks.map((l) => (
               <Button
-                variant="text"
-                color="inherit"
-                onClick={() => navigate(PATHS.LOGIN)}
+                key={l.to}
+                component={RouterLink}
+                to={l.to}
+                onClick={() => setOpen(false)}
+                color={location.pathname === l.to ? "primary" : "inherit"}
+              >
+                {l.label}
+              </Button>
+            ))}
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          {!isAuthenticated ? (
+            <Stack direction="row" spacing={1}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  setOpen(false);
+                  navigate(PATHS.LOGIN);
+                }}
               >
                 Sign in
               </Button>
               <Button
+                fullWidth
                 variant="contained"
-                onClick={() => navigate(PATHS.REGISTER)}
+                onClick={() => {
+                  setOpen(false);
+                  navigate(PATHS.REGISTER);
+                }}
               >
                 Register
               </Button>
-            </Box>
+            </Stack>
           ) : (
-            <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-              <Typography variant="body2" sx={{ mr: 1 }}>
-                {`${user?.firstName} ${user?.lastName}`}
-              </Typography>
-              <Button variant="outlined" onClick={() => logout()}>
-                Logout
-              </Button>
-            </Box>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => {
+                setOpen(false);
+                logout();
+              }}
+            >
+              Logout
+            </Button>
           )}
-        </Toolbar>
-      </Container>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }

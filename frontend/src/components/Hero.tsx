@@ -69,30 +69,30 @@ export default function Hero() {
     <Container maxWidth="xl" sx={{ py: 3, mx: "auto", width: "95%" }}>
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <Stack spacing={2} sx={{ flex: 1, minWidth: 280 }} ref={leftRef}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 5,
-              borderRadius: 3,
-              backgroundColor: "#6b6bff",
-              color: "white",
-            }}
-          >
-            <Typography
-              variant="h3"
+            <Paper
+              elevation={0}
               sx={{
-                fontWeight: 800,
-                mb: 1.5,
-                lineHeight: 1.05,
-                color: "white",
+                p: 5,
+                borderRadius: 3,
+                backgroundColor: "primary.main",
+                color: "primary.contrastText",
               }}
             >
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 800,
+                  mb: 1.5,
+                  lineHeight: 1.05,
+                  color: "primary.contrastText",
+                }}
+              >
               Skopje Marathon 2025
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{ opacity: 0.95, mb: 2, color: "white" }}
-            >
+              <Typography
+                variant="h6"
+                sx={{ opacity: 0.95, mb: 2, color: "primary.contrastText" }}
+              >
               Embark on the ultimate test of endurance and determination, where
               each stride is a journey of self‑discovery.
             </Typography>
@@ -102,9 +102,9 @@ export default function Hero() {
               variant="contained"
               endIcon={<ArrowOutwardRounded fontSize="small" />}
               sx={{
-                color: "black",
+                color: "primary.main",
                 borderRadius: 9999,
-                backgroundColor: "white",
+                backgroundColor: "primary.contrastText",
               }}
             >
               Register Here
@@ -118,7 +118,7 @@ export default function Hero() {
               borderRadius: 3,
               py: 3,
               px: 5,
-              background: (t) => t.palette.grey[300],
+              backgroundColor: "grey.100",
             }}
           >
             <Stack direction="row" spacing={2} alignItems="center">

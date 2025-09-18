@@ -15,7 +15,7 @@ export default function Footer() {
       sx={{
         pt: 6,
         pb: 3,
-        backgroundColor: "#b6b5df",
+        backgroundColor: "info.main",
         borderTop: 1,
         borderColor: "divider",
       }}
@@ -28,7 +28,7 @@ export default function Footer() {
           flexWrap="wrap"
         >
           <Box sx={{ flex: 1, minWidth: 250 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: "black" }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "text.primary" }}>
               Skopje Marathon
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -47,7 +47,7 @@ export default function Footer() {
             </Stack>
           </Box>
           <Box sx={{ flex: 1, minWidth: 250 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "black" }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "text.primary" }}>
               Links
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
@@ -66,7 +66,7 @@ export default function Footer() {
             </Box>
           </Box>
           <Box sx={{ flex: 1, minWidth: 250 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "black" }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "text.primary" }}>
               Contact
             </Typography>
             <Typography variant="body2">office@skopjemarathon.mk</Typography>
