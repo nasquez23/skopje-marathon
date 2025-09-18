@@ -1,9 +1,8 @@
 package com.skopjemarathon.controller;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,14 +70,15 @@ public class ParticipantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ParticipantResponse>> listPaid(
+    public ResponseEntity<Page<ParticipantResponse>> listPaid(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Category category) {
-        List<ParticipantResponse> list = participantService.listPaid(name, category).stream()
+            @RequestParam(required = false) Category category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ParticipantResponse> list = participantService.listPaid(name, category, page, size)
                 .map(p -> new ParticipantResponse(
                         p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(),
-                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber()))
-                .toList();
+                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber()));
         return ResponseEntity.ok(list);
     }
 }

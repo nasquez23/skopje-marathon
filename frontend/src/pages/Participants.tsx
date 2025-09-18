@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, Button, CircularProgress, Alert } from "@mui/material";
+import { Box, Button, CircularProgress, Alert, Pagination } from "@mui/material";
 import PATHS from "../constants/paths";
 import { Link as RouterLink } from "react-router-dom";
 import { useParticipants } from "../hooks/use-participants";
@@ -18,6 +18,9 @@ export default function Participants() {
     category,
     setCategory,
     participants,
+    page,
+    totalPages,
+    setPage,
     loading,
     error,
   } = useParticipants();
@@ -106,6 +109,17 @@ export default function Participants() {
           <Typography variant="h6" color="text.secondary">
             No participants found
           </Typography>
+        </Box>
+      )}
+
+      {!loading && totalPages > 1 && (
+        <Box display="flex" justifyContent="center" py={4}>
+          <Pagination
+            count={totalPages}
+            page={page + 1}
+            onChange={(_, p) => setPage(p - 1)}
+            color="primary"
+          />
         </Box>
       )}
     </Container>

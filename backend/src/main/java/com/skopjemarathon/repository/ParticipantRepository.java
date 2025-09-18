@@ -1,9 +1,10 @@
 package com.skopjemarathon.repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,9 +44,25 @@ public interface ParticipantRepository extends JpaRepository<Participant, UUID> 
                     )
                   )
               AND (:category IS NULL OR p.category = :category)
-            """, nativeQuery = true)
-    List<Participant> findPaidParticipants(
+            ORDER BY p.created_at DESC
+            """,
+            countQuery = """
+            SELECT COUNT(1)
+            FROM participants p
+            JOIN payments pay ON pay.participant_id = p.id
+            WHERE pay.status = :status
+              AND (
+                    :nameQuery IS NULL OR (
+                        p.first_name ILIKE CONCAT('%', CAST(:nameQuery AS TEXT), '%')
+                        OR p.last_name ILIKE CONCAT('%', CAST(:nameQuery AS TEXT), '%')
+                    )
+                  )
+              AND (:category IS NULL OR p.category = :category)
+            """,
+            nativeQuery = true)
+    Page<Participant> findPaidParticipants(
             @Param("status") String status,
             @Param("nameQuery") String nameQuery,
-            @Param("category") String category);
+            @Param("category") String category,
+            Pageable pageable);
 }

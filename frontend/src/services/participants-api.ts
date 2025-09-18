@@ -7,6 +7,7 @@ import type {
   PaymentSimulationRequest,
   Category,
 } from "../types/participant";
+import type { PageResponse } from "../types/participant";
 
 export const registerParticipant = async (
   payload: RegisterParticipantRequest
@@ -42,12 +43,16 @@ export const getParticipantStatus = async (
 
 export const listPaidParticipants = async (
   name?: string,
-  category?: Category
-): Promise<ParticipantResponse[]> => {
+  category?: Category,
+  page: number = 0,
+  size: number = 12
+): Promise<PageResponse<ParticipantResponse>> => {
   const params = new URLSearchParams();
   if (name) params.append("name", name);
   if (category) params.append("category", category);
-  const { data } = await axiosInstance.get<ParticipantResponse[]>(
+  params.append("page", String(page));
+  params.append("size", String(size));
+  const { data } = await axiosInstance.get<PageResponse<ParticipantResponse>>(
     `${API_ROUTES.PARTICIPANTS.LIST}?${params.toString()}`
   );
   return data;

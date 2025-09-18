@@ -1,6 +1,6 @@
 package com.skopjemarathon.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 import java.util.Optional;
 
 import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
@@ -15,7 +15,7 @@ public interface ParticipantService {
 
     Optional<ParticipantStatusResponse> getStatusByRegistration(String registrationNumber);
 
-    List<Participant> listPaid(String nameQuery, Category category);
+    Page<Participant> listPaid(String nameQuery, Category category, int page, int size);
 
     Optional<Participant> findByEmail(String email);
 
