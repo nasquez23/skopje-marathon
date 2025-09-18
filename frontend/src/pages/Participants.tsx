@@ -2,14 +2,19 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, Button, CircularProgress, Alert, Pagination } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Alert,
+  Pagination,
+} from "@mui/material";
 import PATHS from "../constants/paths";
 import { Link as RouterLink } from "react-router-dom";
 import { useParticipants } from "../hooks/use-participants";
 import type { Category } from "../types/participant";
+import ParticipantCard from "../components/ParticipantCard";
 
 export default function Participants() {
   const {
@@ -88,18 +93,7 @@ export default function Participants() {
       ) : (
         <Grid container spacing={2}>
           {participants.map((p) => (
-            <Grid size={4} key={p.id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">
-                    {p.firstName} {p.lastName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {p.category} • Start #{p.startNumber ?? "N/A"}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <ParticipantCard key={p.id} participant={p} />
           ))}
         </Grid>
       )}

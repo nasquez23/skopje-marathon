@@ -23,12 +23,13 @@ export default function PaymentModal({
   participantId,
   onSuccess,
 }: PaymentModalProps) {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expMonth, setExpMonth] = useState("");
-  const [expYear, setExpYear] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [cardNumber, setCardNumber] = useState<string>("");
+  const [expMonth, setExpMonth] = useState<string>("");
+  const [expYear, setExpYear] = useState<string>("");
+  const [cardHolder, setCardHolder] = useState<string>("");
+  const [cvv, setCvv] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState<boolean>(false);
   const payMutation = useSimulatePayment(participantId);
 
   const handlePay = async () => {
@@ -47,13 +48,16 @@ export default function PaymentModal({
 
       if (result === "PAID") {
         setMessage("Payment successful!");
+        setIsPaymentSuccess(true);
         onSuccess?.();
         onClose();
       } else {
         setMessage("Payment failed. Please try again.");
+        setIsPaymentSuccess(false);
       }
     } catch {
       setMessage("Payment failed. Please check your card details.");
+      setIsPaymentSuccess(false);
     }
   };
 
@@ -111,16 +115,24 @@ export default function PaymentModal({
             />
           </Grid>
         </Grid>
-        {message && <Typography sx={{ mt: 1 }}>{message}</Typography>}
+        {message && (
+          <Typography sx={{ mt: 1, color: isPaymentSuccess ? "green" : "red" }}>
+            {message}
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
           onClick={handlePay}
-          disabled={payMutation.status === "pending" || !participantId}
+          disabled={
+            payMutation.status === "pending" ||
+            !participantId ||
+            isPaymentSuccess
+          }
         >
-          Pay
+          {isPaymentSuccess ? "Payment Successful" : "Pay"}
         </Button>
       </DialogActions>
     </Dialog>
