@@ -1,13 +1,5 @@
 package com.skopjemarathon.service.impl;
 
-import com.skopjemarathon.enums.Category;
-import com.skopjemarathon.enums.PaymentStatus;
-import com.skopjemarathon.model.Participant;
-import com.skopjemarathon.model.Payment;
-import com.skopjemarathon.repository.ParticipantRepository;
-import com.skopjemarathon.repository.PaymentRepository;
-import com.skopjemarathon.service.ParticipantService;
-import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +7,15 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
+import com.skopjemarathon.enums.Category;
+import com.skopjemarathon.enums.PaymentStatus;
+import com.skopjemarathon.model.Participant;
+import com.skopjemarathon.model.Payment;
+import com.skopjemarathon.repository.ParticipantRepository;
+import com.skopjemarathon.repository.PaymentRepository;
+import com.skopjemarathon.service.ParticipantService;
 
 @Service
 @Transactional
@@ -77,11 +78,11 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Participant> listPaid(Optional<String> nameQuery, Optional<Category> category) {
+    public List<Participant> listPaid(String nameQuery, Category category) {
         return participantRepository.findPaidParticipants(
-                PaymentStatus.PAID,
-                nameQuery.orElse(null),
-                category.orElse(null));
+                PaymentStatus.PAID.name(),
+                nameQuery,
+                category != null ? category.name() : null);
     }
 
     @Override

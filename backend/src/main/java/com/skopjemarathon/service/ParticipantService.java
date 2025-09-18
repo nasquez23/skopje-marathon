@@ -1,10 +1,11 @@
 package com.skopjemarathon.service;
 
-import com.skopjemarathon.enums.Category;
-import com.skopjemarathon.model.Participant;
-import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import java.util.List;
 import java.util.Optional;
+
+import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
+import com.skopjemarathon.enums.Category;
+import com.skopjemarathon.model.Participant;
 
 public interface ParticipantService {
 
@@ -14,7 +15,7 @@ public interface ParticipantService {
 
     Optional<ParticipantStatusResponse> getStatusByRegistration(String registrationNumber);
 
-    List<Participant> listPaid(Optional<String> nameQuery, Optional<Category> category);
+    List<Participant> listPaid(String nameQuery, Category category);
 
     Optional<Participant> findByEmail(String email);
 
