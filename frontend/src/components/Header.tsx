@@ -27,27 +27,22 @@ export default function Header() {
   ];
 
   return (
-    <AppBar
-      position="sticky"
-      color="inherit"
-      elevation={0}
-      sx={{
-        pt: 1,
-      }}
-    >
+    <AppBar position="sticky" color="inherit" elevation={0}>
       <Container
         maxWidth="xl"
         sx={{
           py: 2,
           backgroundColor: "info.main",
-          borderRadius: 5,
-          mx: "auto",
-          width: "95%",
         }}
       >
         <Toolbar
           disableGutters
-          sx={{ gap: 2, justifyContent: "space-between" }}
+          sx={{
+            gap: 2,
+            justifyContent: "space-between",
+            width: "95%",
+            mx: "auto",
+          }}
         >
           <Typography variant="h6" sx={{ fontWeight: 800 }}>
             <Link

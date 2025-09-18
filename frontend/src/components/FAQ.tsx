@@ -91,7 +91,7 @@ export default function FAQ() {
     <Box sx={{ backgroundColor: (t) => t.palette.grey[100], py: 6 }}>
       <Container maxWidth="lg">
         <Typography
-          variant="h5"
+          variant="h4"
           sx={{
             fontWeight: 800,
             textAlign: "center",
@@ -102,7 +102,7 @@ export default function FAQ() {
         >
           Frequently Asked Questions
         </Typography>
-        <Stack>
+        <Stack spacing={1}>
           {faqs.map((item) => (
             <Accordion
               expanded={expanded === item.id}
