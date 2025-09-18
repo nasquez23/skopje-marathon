@@ -72,8 +72,8 @@ public class ParticipantController {
 
     @GetMapping
     public ResponseEntity<List<ParticipantResponse>> listPaid(
-            @RequestParam Optional<String> name,
-            @RequestParam Optional<Category> category) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Category category) {
         List<ParticipantResponse> list = participantService.listPaid(name, category).stream()
                 .map(p -> new ParticipantResponse(
                         p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(),
