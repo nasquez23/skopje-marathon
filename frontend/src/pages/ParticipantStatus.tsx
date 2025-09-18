@@ -39,7 +39,7 @@ export default function ParticipantStatus() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ my: 8 }}>
+    <Container maxWidth="md" sx={{ my: 8, minHeight: "40vh" }}>
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
           Check participant

@@ -13,6 +13,7 @@ import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRound
 import { Link as RouterLink } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowOutwardRounded } from "@mui/icons-material";
+import PATHS from "../constants/paths";
 
 export default function Hero() {
   const images = useMemo(
@@ -65,161 +66,161 @@ export default function Hero() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        backgroundColor: (t) => t.palette.grey[100],
-        py: 3,
-        borderBottom: 1,
-        borderColor: "divider",
-      }}
-    >
-      <Container maxWidth="lg">
-        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-          <Stack spacing={2} sx={{ flex: 1, minWidth: 280 }} ref={leftRef}>
-            <Paper
-              elevation={0}
+    <Container maxWidth="xl" sx={{ py: 3, mx: "auto", width: "95%" }}>
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        <Stack spacing={2} sx={{ flex: 1, minWidth: 280 }} ref={leftRef}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 5,
+              borderRadius: 3,
+              backgroundColor: "#6b6bff",
+              color: "white",
+            }}
+          >
+            <Typography
+              variant="h3"
               sx={{
-                p: 3,
-                borderRadius: 3,
-                backgroundColor: "#6b6bff",
+                fontWeight: 800,
+                mb: 1.5,
+                lineHeight: 1.05,
                 color: "white",
               }}
             >
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 800,
-                  mb: 1.5,
-                  lineHeight: 1.05,
-                  color: "white",
-                }}
-              >
-                Skopje Marathon 2025
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ opacity: 0.95, mb: 2, color: "white" }}
-              >
-                Embark on the ultimate test of endurance and determination,
-                where each stride is a journey of self‑discovery.
-              </Typography>
-              <Button
-                component={RouterLink}
-                to="/register"
-                variant="contained"
-                endIcon={<ArrowOutwardRounded fontSize="small" />}
-                sx={{
-                  color: "black",
-                  borderRadius: 9999,
-                  backgroundColor: "white",
-                }}
-              >
-                Register Here
-              </Button>
-            </Paper>
-
-            <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, p: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                {[
-                  { label: "DAYS", value: days },
-                  { label: "HOURS", value: hours },
-                  { label: "MINS", value: mins },
-                  { label: "SECS", value: secs },
-                ].map((it) => (
-                  <Box key={it.label} sx={{ textAlign: "center" }}>
-                    <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                      {String(it.value).padStart(2, "0")}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {it.label}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
-              <Box sx={{ mt: 1.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                  October 27th, 2025
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  At 8:45 AM
-                </Typography>
-              </Box>
-            </Paper>
-          </Stack>
-
-          <Box
-            sx={{
-              flex: 1,
-              minWidth: 280,
-              height: { xs: "auto", md: leftHeight || "auto" },
-            }}
-          >
-            <Box
+              Skopje Marathon 2025
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{ opacity: 0.95, mb: 2, color: "white" }}
+            >
+              Embark on the ultimate test of endurance and determination, where
+              each stride is a journey of self‑discovery.
+            </Typography>
+            <Button
+              component={RouterLink}
+              to={PATHS.PARTICIPANT_REGISTER}
+              variant="contained"
+              endIcon={<ArrowOutwardRounded fontSize="small" />}
               sx={{
-                position: "relative",
-                borderRadius: 3,
-                overflow: "hidden",
-                height: { xs: 300, md: leftHeight || 300 },
+                color: "black",
+                borderRadius: 9999,
+                backgroundColor: "white",
               }}
             >
-              <img
-                src={images[index]}
-                alt="Hero"
-                style={{
-                  width: "100%",
-                  height: leftHeight ? leftHeight : 300,
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-              <IconButton
-                onClick={() =>
-                  setIndex((i) => (i - 1 + images.length) % images.length)
-                }
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: 8,
-                  transform: "translateY(-50%)",
-                  bgcolor: "rgba(255,255,255,0.8)",
-                }}
-              >
-                <ArrowBackIosNewRoundedIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                onClick={() => setIndex((i) => (i + 1) % images.length)}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  right: 8,
-                  transform: "translateY(-50%)",
-                  bgcolor: "rgba(255,255,255,0.8)",
-                }}
-              >
-                <ArrowForwardIosRoundedIcon fontSize="small" />
-              </IconButton>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{
-                  position: "absolute",
-                  bottom: 10,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                }}
-              >
-                {images.map((_, i) => (
-                  <FiberManualRecordRoundedIcon
-                    key={i}
-                    fontSize="small"
-                    color={i === index ? "primary" : "disabled"}
-                  />
-                ))}
-              </Stack>
+              Register Here
+            </Button>
+          </Paper>
+
+          <Paper
+            elevation={0}
+            sx={{
+              flex: 1,
+              borderRadius: 3,
+              py: 3,
+              px: 5,
+              background: (t) => t.palette.grey[300],
+            }}
+          >
+            <Stack direction="row" spacing={2} alignItems="center">
+              {[
+                { label: "DAYS", value: days },
+                { label: "HOURS", value: hours },
+                { label: "MINS", value: mins },
+                { label: "SECS", value: secs },
+              ].map((it) => (
+                <Box key={it.label} sx={{ textAlign: "center" }}>
+                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                    {String(it.value).padStart(2, "0")}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {it.label}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+            <Box sx={{ mt: 1.5 }}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                October 27th, 2025
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                At 8:45 AM
+              </Typography>
             </Box>
-          </Box>
+          </Paper>
         </Stack>
-      </Container>
-    </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            minWidth: 280,
+            height: { xs: "auto", md: leftHeight || "auto" },
+          }}
+        >
+          <Box
+            sx={{
+              position: "relative",
+              borderRadius: 3,
+              overflow: "hidden",
+              height: { xs: 300, md: leftHeight || "auto" },
+            }}
+          >
+            <img
+              src={images[index]}
+              alt="Hero"
+              style={{
+                width: "100%",
+                height: leftHeight ? leftHeight : 300,
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <IconButton
+              onClick={() =>
+                setIndex((i) => (i - 1 + images.length) % images.length)
+              }
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: 8,
+                transform: "translateY(-50%)",
+                bgcolor: "rgba(255,255,255,0.8)",
+              }}
+            >
+              <ArrowBackIosNewRoundedIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              onClick={() => setIndex((i) => (i + 1) % images.length)}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                right: 8,
+                transform: "translateY(-50%)",
+                bgcolor: "rgba(255,255,255,0.8)",
+              }}
+            >
+              <ArrowForwardIosRoundedIcon fontSize="small" />
+            </IconButton>
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{
+                position: "absolute",
+                bottom: 10,
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {images.map((_, i) => (
+                <FiberManualRecordRoundedIcon
+                  key={i}
+                  fontSize="small"
+                  color={i === index ? "primary" : "disabled"}
+                />
+              ))}
+            </Stack>
+          </Box>
+        </Box>
+      </Stack>
+    </Container>
   );
 }

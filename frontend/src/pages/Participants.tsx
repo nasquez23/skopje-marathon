@@ -48,6 +48,11 @@ export default function Participants() {
         </Typography>
         <Button
           variant="contained"
+          color="primary"
+          sx={{
+            borderRadius: 9999,
+            "&:hover": { color: "white" },
+          }}
           component={RouterLink}
           to={PATHS.PARTICIPANT_REGISTER}
         >
