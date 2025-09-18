@@ -6,31 +6,34 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import PaymentModal from "../components/PaymentModal";
 import { useState } from "react";
-import { getParticipantStatus } from "../services/participants-api";
+import { useParticipantStatus } from "../hooks/use-participant-status";
 
 export default function ParticipantStatus() {
   const [searchValue, setSearchValue] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [participantId, setParticipantId] = useState<string | null>(null);
+  const { refetch, isFetching } = useParticipantStatus(searchValue);
 
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   const onCheck = async () => {
     setMessage(null);
-    const data = await getParticipantStatus(searchValue);
-    console.log(data);
-    setStatus(data.status);
-    setParticipantId(data.participantId);
-    if (data.status === "PAID")
+    const res = await refetch();
+    const d = res.data;
+
+    if (!d) return;
+
+    setStatus(d.status);
+    setParticipantId(d.participantId);
+
+    if (d.status === "PAID")
       setMessage(
-        `Successful registration. Start number: ${
-          data.startNumber ?? "assigned"
-        }`
+        `Successful registration. Start number: ${d.startNumber ?? "assigned"}`
       );
-    if (data.status === "PENDING" || data.status === "FAILED") {
+    if (d.status === "PENDING" || d.status === "FAILED") {
       setMessage(
-        `Not paid. Registration: ${data.registrationNumber ?? searchValue}`
+        `Not paid. Registration: ${d.registrationNumber ?? searchValue}`
       );
     }
   };
@@ -49,7 +52,11 @@ export default function ParticipantStatus() {
             placeholder="Enter email or registration number"
             fullWidth
           />
-          <Button variant="contained" onClick={onCheck}>
+          <Button
+            variant="contained"
+            onClick={onCheck}
+            disabled={!searchValue || isFetching}
+          >
             Check
           </Button>
           {status && <Typography>Status: {status}</Typography>}

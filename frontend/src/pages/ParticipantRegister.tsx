@@ -6,11 +6,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { useState } from "react";
-import { registerParticipant } from "../services/participants-api";
+import { useRegisterParticipant } from "../hooks/use-register-participant";
 import type { Category } from "../types/participant";
 import PaymentModal from "../components/PaymentModal";
 
 export default function ParticipantRegister() {
+  const registerMutation = useRegisterParticipant();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,20 +26,26 @@ export default function ParticipantRegister() {
     e.preventDefault();
     setError(null);
     setResult(null);
-    try {
-      const res = await registerParticipant({
+
+    await registerMutation.mutateAsync(
+      {
         firstName,
         lastName,
         email,
         age,
         category,
-      });
-      setResult(`Registration number: ${res.registrationNumber}`);
-      setParticipantId(res.id);
-      setPaymentOpen(true);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Registration failed");
-    }
+      },
+      {
+        onSuccess: (res) => {
+          setResult(`Registration number: ${res.registrationNumber}`);
+          setParticipantId(res.id);
+          setPaymentOpen(true);
+        },
+        onError: (err) => {
+          setError(err?.response?.data?.message || "Registration failed");
+        },
+      }
+    );
   };
 
   return (
@@ -99,7 +106,9 @@ export default function ParticipantRegister() {
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
         participantId={participantId ?? ""}
-        onSuccess={() => setResult((prev) => (prev ? prev + " • Paid" : "Paid"))}
+        onSuccess={() =>
+          setResult((prev) => (prev ? prev + " • Paid" : "Paid"))
+        }
       />
     </Container>
   );

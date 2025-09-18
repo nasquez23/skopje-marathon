@@ -7,8 +7,8 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { simulatePayment } from "../services/participants-api";
 import type { PaymentSimulationRequest } from "../types/participant";
+import { useSimulatePayment } from "../hooks/use-simulate-payment";
 
 interface PaymentModalProps {
   open: boolean;
@@ -29,11 +29,10 @@ export default function PaymentModal({
   const [cardHolder, setCardHolder] = useState("");
   const [cvv, setCvv] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const payMutation = useSimulatePayment(participantId);
 
   const handlePay = async () => {
     if (!participantId) return;
-    setLoading(true);
     setMessage(null);
     try {
       const payload: PaymentSimulationRequest = {
@@ -44,7 +43,7 @@ export default function PaymentModal({
         cvv,
       };
 
-      const result = await simulatePayment(participantId, payload);
+      const result = await payMutation.mutateAsync(payload);
 
       if (result === "PAID") {
         setMessage("Payment successful!");
@@ -55,8 +54,6 @@ export default function PaymentModal({
       }
     } catch {
       setMessage("Payment failed. Please check your card details.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -121,7 +118,7 @@ export default function PaymentModal({
         <Button
           variant="contained"
           onClick={handlePay}
-          disabled={loading || !participantId}
+          disabled={payMutation.status === "pending" || !participantId}
         >
           Pay
         </Button>
