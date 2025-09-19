@@ -9,6 +9,8 @@ import PaymentModal from "../components/PaymentModal";
 import PageContainer from "../components/layout/PageContainer";
 import FormCard from "../components/layout/FormCard";
 import CategorySelect from "../components/forms/CategorySelect";
+import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
+import { Alert } from "@mui/material";
 
 export default function ParticipantRegister() {
   const registerMutation = useRegisterParticipant();
@@ -87,7 +89,11 @@ export default function ParticipantRegister() {
               required
             />
             {result && <Typography color="success.main">{result}</Typography>}
-            {error && <Typography color="error">{error}</Typography>}
+            {error && (
+              <Alert severity={getErrorSeverity(error)}>
+                {getErrorMessage(error)}
+              </Alert>
+            )}
             <Button type="submit" variant="contained">
               Submit
             </Button>

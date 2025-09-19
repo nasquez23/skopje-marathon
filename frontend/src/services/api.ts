@@ -32,7 +32,7 @@ export const putter = async <D = any, R = any>(
   return await axiosInstance.put(path, data);
 };
 
-export const deleter = async <D = any, R = any>(
+export const deleter = async <_D = any, R = any>(
   path: string
 ): Promise<AxiosResponse<R>> => {
   return await axiosInstance.delete(path);

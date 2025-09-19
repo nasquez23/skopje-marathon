@@ -9,6 +9,8 @@ import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import PATHS from "../constants/paths";
+import { Alert } from "@mui/material";
+import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
 
 export default function Register() {
   const { register, isLoading } = useAuth();
@@ -72,9 +74,9 @@ export default function Register() {
               required
             />
             {error && (
-              <Typography color="error" variant="body2">
+              <Alert severity={getErrorSeverity(error)}>
                 {error}
-              </Typography>
+              </Alert>
             )}
             <Button
               type="submit"

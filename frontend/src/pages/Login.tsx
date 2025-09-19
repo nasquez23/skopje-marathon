@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import PATHS from "../constants/paths";
+import { Alert } from "@mui/material";
+import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
 
 export default function Login() {
   const { login, isLoading } = useAuth();
@@ -23,6 +25,7 @@ export default function Login() {
       await login({ email, password });
       navigate(PATHS.HOME);
     } catch (err: any) {
+      console.log(err.response?.data?.message);
       setError(
         err.response?.data?.message || "Login failed. Please try again."
       );
@@ -56,9 +59,9 @@ export default function Login() {
             required
           />
           {error && (
-            <Typography color="error" variant="body2">
+            <Alert severity={getErrorSeverity(error)}>
               {error}
-            </Typography>
+            </Alert>
           )}
           <Button type="submit" variant="contained" disabled={isLoading}>
             Sign in

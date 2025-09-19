@@ -53,7 +53,7 @@ export default function StatusForm({
           {isSubmitting ? "Checking..." : buttonText}
         </Button>
 
-        {error && (
+        {!!error && (
           <Alert severity={getErrorSeverity(error)}>
             {getErrorMessage(error)}
           </Alert>

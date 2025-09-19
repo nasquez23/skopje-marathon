@@ -1,6 +1,6 @@
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface FormCardProps {
   children: ReactNode;
