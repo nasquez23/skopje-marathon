@@ -1,17 +1,12 @@
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import { Alert, InputAdornment } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Alert, Button } from "@mui/material";
 import PaymentModal from "../components/PaymentModal";
 import { useState, type FormEvent } from "react";
 import { useParticipantStatus } from "../hooks/use-participant-status";
 import type { PaymentStatus } from "../types/participant";
-import PaymentStatusChip from "../components/PaymentStatusChip";
-import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
+import PaymentStatusChip from "../components/ui/PaymentStatusChip";
+import PageContainer from "../components/layout/PageContainer";
+import FormCard from "../components/layout/FormCard";
+import StatusForm from "../components/forms/StatusForm";
 
 export default function ParticipantStatus() {
   const [searchValue, setSearchValue] = useState("");
@@ -47,62 +42,35 @@ export default function ParticipantStatus() {
   };
 
   return (
-    <Container
+    <PageContainer
       maxWidth="md"
-      sx={{ my: 8, minHeight: "40vh", width: "50%", mx: "auto" }}
+      sx={{ minHeight: "40vh", width: "50%", mx: "auto" }}
     >
-      <Paper elevation={5} sx={{ p: 5 }}>
-        <form onSubmit={onCheck}>
-          <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
-            Check participant's status
-          </Typography>
-          <Stack spacing={2}>
-            <TextField
-              label="Email or Registration Number"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="Enter email or registration number"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" />
-                  </InputAdornment>
-                ),
-              }}
-              helperText="Example: jane.doe@email.com or REG-1234ABCD"
-            />
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={!searchValue || isFetching}
-            >
-              {isFetching ? "Checking..." : "Check"}
-            </Button>
+      <FormCard title="Check participant's status">
+        <StatusForm
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          onSubmit={onCheck}
+          isSubmitting={isFetching}
+          error={isError ? error : undefined}
+        />
 
-            {isError && (
-              <Alert severity={getErrorSeverity(error)}>
-                {getErrorMessage(error)}
-              </Alert>
-            )}
+        {status && <PaymentStatusChip status={status} />}
 
-            {status && <PaymentStatusChip status={status} />}
-
-            {message && (
-              <Alert
-                severity={
-                  status === "PAID"
-                    ? "success"
-                    : status === "FAILED"
-                    ? "error"
-                    : "info"
-                }
-              >
-                {message}
-              </Alert>
-            )}
-          </Stack>
-        </form>
+        {message && (
+          <Alert
+            severity={
+              status === "PAID"
+                ? "success"
+                : status === "FAILED"
+                ? "error"
+                : "info"
+            }
+            sx={{ mt: 2 }}
+          >
+            {message}
+          </Alert>
+        )}
 
         {status === "PENDING" || status === "FAILED" ? (
           <Button
@@ -114,7 +82,7 @@ export default function ParticipantStatus() {
             Pay Now
           </Button>
         ) : null}
-      </Paper>
+      </FormCard>
       <PaymentModal
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
@@ -126,6 +94,6 @@ export default function ParticipantStatus() {
           );
         }}
       />
-    </Container>
+    </PageContainer>
   );
 }

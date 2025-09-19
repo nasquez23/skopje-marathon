@@ -1,7 +1,7 @@
 import { Card, Grid, Typography } from "@mui/material";
 import { CardContent } from "@mui/material";
-import type { ParticipantResponse } from "../types/participant";
-import { formatCategory } from "../lib/format";
+import type { ParticipantResponse } from "../../types/participant";
+import { formatCategory } from "../../lib/format";
 
 export default function ParticipantCard({
   participant,

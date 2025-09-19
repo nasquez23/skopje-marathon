@@ -1,65 +1,38 @@
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import { Box, Chip, Rating, Stack, Button } from "@mui/material";
+import { Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useRaces } from "../hooks/use-races";
+import PageContainer from "../components/layout/PageContainer";
+import RaceCard from "../components/cards/RaceCard";
+import LoadingState from "../components/ui/LoadingState";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function Editions() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useRaces();
 
+  if (error) {
+    return (
+      <PageContainer title="Skopje Marathon Editions">
+        <ErrorState error={error} />
+      </PageContainer>
+    );
+  }
+
   return (
-    <Container maxWidth="xl" sx={{ my: 6, width: "95%", mx: "auto" }}>
-      <Typography variant="h4" sx={{ fontWeight: 800, mb: 3 }}>
-        Skopje Marathon Editions
-      </Typography>
-      {error && <Typography color="error">Failed to load editions</Typography>}
+    <PageContainer title="Skopje Marathon Editions">
       {isLoading ? (
-        <Typography>Loading…</Typography>
+        <LoadingState message="Loading editions..." />
       ) : (
         <Stack spacing={2}>
-          {data?.map((r) => (
-            <Card elevation={4} sx={{ borderRadius: 3 }}>
-              <CardContent>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {r.name} {r.edition}
-                  </Typography>
-                  <Chip
-                    label={r.status}
-                    color={r.status === "UPCOMING" ? "primary" : "default"}
-                    size="small"
-                  />
-                </Stack>
-                <Typography variant="body2" color="text.secondary">
-                  {r.location} • {new Date(r.raceDate).toLocaleDateString()}
-                </Typography>
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}
-                >
-                  <Rating value={r.averageRating} precision={0.5} readOnly />
-                  <Typography variant="body2" color="text.secondary">
-                    ({r.reviewsCount})
-                  </Typography>
-                </Box>
-                <Button
-                  sx={{ mt: 2 }}
-                  variant="contained"
-                  onClick={() => navigate(`/editions/${r.id}`)}
-                >
-                  View details
-                </Button>
-              </CardContent>
-            </Card>
+          {data?.map((race) => (
+            <RaceCard
+              key={race.id}
+              race={race}
+              onViewDetails={(raceId) => navigate(`/editions/${raceId}`)}
+            />
           ))}
         </Stack>
       )}
-    </Container>
+    </PageContainer>
   );
 }

@@ -1,5 +1,5 @@
 import { Box, Chip } from "@mui/material";
-import type { PaymentStatus } from "../types/participant";
+import type { PaymentStatus } from "../../types/participant";
 
 export default function PaymentStatusChip({
   status,

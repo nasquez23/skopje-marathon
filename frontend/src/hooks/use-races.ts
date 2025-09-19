@@ -24,11 +24,16 @@ export function useRaceDetails(id: string | null) {
   });
 }
 
-export function useRaceReviews(id: string | null, page: number, size: number) {
+export function useRaceReviews(
+  id: string | null,
+  page: number,
+  size: number,
+  enabled: boolean = true
+) {
   return useQuery({
     queryKey: ["race-reviews", id, page, size],
     queryFn: () => listRaceReviews(id ?? "", page, size),
-    enabled: !!id,
+    enabled: !!id || enabled,
   });
 }
 

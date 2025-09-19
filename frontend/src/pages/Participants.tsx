@@ -1,22 +1,15 @@
-import Container from "@mui/material/Container";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Alert,
-  Pagination,
-} from "@mui/material";
+import { Box, Button, Pagination } from "@mui/material";
 import PATHS from "../constants/paths";
 import { Link as RouterLink } from "react-router-dom";
 import { useParticipants } from "../hooks/use-participants";
-import type { Category } from "../types/participant";
-import { formatCategory } from "../lib/format";
-import ParticipantCard from "../components/ParticipantCard";
-import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
+import ParticipantCard from "../components/cards/ParticipantCard";
+import PageContainer from "../components/layout/PageContainer";
+import SearchForm from "../components/forms/SearchForm";
+import CategorySelect from "../components/forms/CategorySelect";
+import LoadingState from "../components/ui/LoadingState";
+import EmptyState from "../components/ui/EmptyState";
+import ErrorState from "../components/ui/ErrorState";
 
 export default function Participants() {
   const {
@@ -34,82 +27,55 @@ export default function Participants() {
     totalElements,
   } = useParticipants();
 
+  const registerButton = (
+    <Button
+      variant="contained"
+      color="primary"
+      size="large"
+      sx={{
+        borderRadius: 9999,
+        "&:hover": { color: "white" },
+      }}
+      component={RouterLink}
+      to={PATHS.PARTICIPANT_REGISTER}
+    >
+      Register
+    </Button>
+  );
+
+  if (isError) {
+    return (
+      <PageContainer title="Participants" action={registerButton}>
+        <ErrorState error={error} />
+      </PageContainer>
+    );
+  }
+
   return (
-    <Container maxWidth="xl" sx={{ my: 6, width: "95%", mx: "auto" }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 4,
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 800, mb: 2, color: "black" }}
-        >
-          Participants
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          sx={{
-            borderRadius: 9999,
-            "&:hover": { color: "white" },
-          }}
-          component={RouterLink}
-          to={PATHS.PARTICIPANT_REGISTER}
-        >
-          Register
-        </Button>
-      </Box>
+    <PageContainer title="Participants" action={registerButton}>
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <TextField
-            fullWidth
-            label="Search by name"
+          <SearchForm
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={setQuery}
+            label="Search by name"
           />
         </Grid>
         <Grid size={{ xs: 12, md: 2 }}>
-          <TextField
-            select
-            fullWidth
-            label="Category"
+          <CategorySelect
             value={category}
-            onChange={(e) => setCategory(e.target.value as Category | "")}
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="_5KM">{formatCategory("_5KM")}</MenuItem>
-            <MenuItem value="_10KM">{formatCategory("_10KM")}</MenuItem>
-            <MenuItem value="HALF_MARATHON">
-              {formatCategory("HALF_MARATHON")}
-            </MenuItem>
-            <MenuItem value="MARATHON">{formatCategory("MARATHON")}</MenuItem>
-          </TextField>
+            onChange={setCategory}
+          />
         </Grid>
       </Grid>
 
-      {isError && (
-        <Alert severity={getErrorSeverity(error)} sx={{ mb: 2 }}>
-          {getErrorMessage(error)}
-        </Alert>
-      )}
-
       {loading ? (
-        <Box display="flex" justifyContent="center" py={4}>
-          <CircularProgress />
-        </Box>
+        <LoadingState message="Loading participants..." />
       ) : (
         <>
-          <Typography
-            variant="subtitle2"
-            sx={{ color: "text.secondary", mb: 1 }}
-          >
+          <Box sx={{ color: "text.secondary", mb: 1 }}>
             Showing {totalElements} {totalElements === 1 ? "result" : "results"}
-          </Typography>
+          </Box>
           <Grid container spacing={2}>
             {participants.map((p) => (
               <ParticipantCard key={p.id} participant={p} />
@@ -119,11 +85,10 @@ export default function Participants() {
       )}
 
       {!loading && participants.length === 0 && (
-        <Box textAlign="center" py={4}>
-          <Typography variant="h6" color="text.secondary">
-            No participants found
-          </Typography>
-        </Box>
+        <EmptyState
+          title="No participants found"
+          description="Try adjusting your search criteria"
+        />
       )}
 
       {!loading && totalPages > 1 && (
@@ -136,6 +101,6 @@ export default function Participants() {
           />
         </Box>
       )}
-    </Container>
+    </PageContainer>
   );
 }

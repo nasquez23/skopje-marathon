@@ -1,5 +1,5 @@
 import { Box, Rating, Typography } from "@mui/material";
-import type { RaceReviewResponse } from "../types/race";
+import type { RaceReviewResponse } from "../../types/race";
 
 export default function RaceReviewCard({ rv }: { rv: RaceReviewResponse }) {
   return (

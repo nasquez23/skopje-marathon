@@ -1,14 +1,14 @@
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { useRegisterParticipant } from "../hooks/use-register-participant";
 import type { Category } from "../types/participant";
 import PaymentModal from "../components/PaymentModal";
+import PageContainer from "../components/layout/PageContainer";
+import FormCard from "../components/layout/FormCard";
+import CategorySelect from "../components/forms/CategorySelect";
 
 export default function ParticipantRegister() {
   const registerMutation = useRegisterParticipant();
@@ -49,11 +49,8 @@ export default function ParticipantRegister() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ my: 8 }}>
-      <Paper variant="outlined" sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
-          Register for the race
-        </Typography>
+    <PageContainer maxWidth="sm">
+      <FormCard title="Register for the race">
         <form onSubmit={onSubmit}>
           <Stack spacing={2}>
             <TextField
@@ -83,17 +80,12 @@ export default function ParticipantRegister() {
               required
               inputProps={{ min: 16 }}
             />
-            <TextField
-              select
-              label="Category"
+            <CategorySelect
               value={category}
-              onChange={(e) => setCategory(e.target.value as Category)}
-            >
-              <MenuItem value="_5KM">5 km</MenuItem>
-              <MenuItem value="_10KM">10 km</MenuItem>
-              <MenuItem value="HALF_MARATHON">Half Marathon</MenuItem>
-              <MenuItem value="MARATHON">Marathon</MenuItem>
-            </TextField>
+              onChange={(cat) => setCategory(cat as Category)}
+              includeAll={false}
+              required
+            />
             {result && <Typography color="success.main">{result}</Typography>}
             {error && <Typography color="error">{error}</Typography>}
             <Button type="submit" variant="contained">
@@ -101,7 +93,7 @@ export default function ParticipantRegister() {
             </Button>
           </Stack>
         </form>
-      </Paper>
+      </FormCard>
       <PaymentModal
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
@@ -110,6 +102,6 @@ export default function ParticipantRegister() {
           setResult((prev) => (prev ? prev + " • Paid" : "Paid"))
         }
       />
-    </Container>
+    </PageContainer>
   );
 }
