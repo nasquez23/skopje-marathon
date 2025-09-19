@@ -10,7 +10,7 @@ import { useAuth } from "../hooks/use-auth";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import PATHS from "../constants/paths";
 import { Alert } from "@mui/material";
-import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
+import { getErrorSeverity } from "../utils/error-handler";
 
 export default function Register() {
   const { register, isLoading } = useAuth();
