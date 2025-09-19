@@ -7,7 +7,7 @@ export default function PaymentStatusChip({
   status: PaymentStatus;
 }) {
   return (
-    <Box>
+    <Box sx={{ mt: 2 }}>
       <Chip
         label={status}
         color={

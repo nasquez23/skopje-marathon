@@ -8,35 +8,32 @@ import type { Category } from "../types/participant";
 import PaymentModal from "../components/PaymentModal";
 import PageContainer from "../components/layout/PageContainer";
 import FormCard from "../components/layout/FormCard";
-import CategorySelect from "../components/forms/CategorySelect";
 import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
 import { Alert } from "@mui/material";
+import CategorySelect from "../components/forms/CategorySelect";
 
 export default function ParticipantRegister() {
   const registerMutation = useRegisterParticipant();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState<number>(18);
-  const [category, setCategory] = useState<Category>("_5KM");
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [participantId, setParticipantId] = useState<string | null>(null);
+  const [category, setCategory] = useState<Category>("_5KM");
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setResult(null);
 
+    const form = e.currentTarget;
+    const entries = Object.fromEntries(new FormData(form).entries());
+    const firstName = String(entries.firstName ?? "");
+    const lastName = String(entries.lastName ?? "");
+    const email = String(entries.email ?? "");
+    const age = Number(entries.age);
+
     await registerMutation.mutateAsync(
-      {
-        firstName,
-        lastName,
-        email,
-        age,
-        category,
-      },
+      { firstName, lastName, email, age, category },
       {
         onSuccess: (res) => {
           setResult(`Registration number: ${res.registrationNumber}`);
@@ -57,33 +54,32 @@ export default function ParticipantRegister() {
           <Stack spacing={2}>
             <TextField
               label="First name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              name="firstName"
+              autoComplete="given-name"
               required
             />
             <TextField
               label="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              name="lastName"
+              autoComplete="family-name"
               required
             />
             <TextField
               type="email"
               label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              autoComplete="email"
               required
             />
             <TextField
               type="number"
               label="Age"
-              value={age}
-              onChange={(e) => setAge(Number(e.target.value))}
+              name="age"
               required
               inputProps={{ min: 16 }}
             />
             <CategorySelect
-              value={category}
+              value={category as Category}
               onChange={(cat) => setCategory(cat as Category)}
               includeAll={false}
               required

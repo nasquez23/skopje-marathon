@@ -14,14 +14,16 @@ import { getErrorSeverity } from "../utils/error-handler";
 export default function Login() {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     try {
+      const form = e.currentTarget;
+      const entries = Object.fromEntries(new FormData(form).entries());
+      const email = String(entries.email ?? "");
+      const password = String(entries.password ?? "");
       await login({ email, password });
       navigate(PATHS.HOME);
     } catch (err: any) {
@@ -46,16 +48,16 @@ export default function Login() {
         >
           <TextField
             type="email"
+            name="email"
             label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
             required
           />
           <TextField
             type="password"
+            name="password"
             label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
             required
           />
           {error && (

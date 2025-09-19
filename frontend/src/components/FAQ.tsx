@@ -105,6 +105,7 @@ export default function FAQ() {
         <Stack spacing={1}>
           {faqs.map((item) => (
             <Accordion
+            key={item.id}
               expanded={expanded === item.id}
               onChange={handleChange(item.id)}
               sx={{ borderRadius: 3, overflow: "hidden" }}

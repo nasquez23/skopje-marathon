@@ -15,16 +15,18 @@ import { getErrorSeverity } from "../utils/error-handler";
 export default function Register() {
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     try {
+      const form = e.currentTarget;
+      const entries = Object.fromEntries(new FormData(form).entries());
+      const firstName = String(entries.firstName ?? "");
+      const lastName = String(entries.lastName ?? "");
+      const email = String(entries.email ?? "");
+      const password = String(entries.password ?? "");
       await register({ email, password, firstName, lastName });
       navigate(PATHS.HOME);
     } catch (err: any) {
@@ -45,32 +47,32 @@ export default function Register() {
           <Stack spacing={2}>
             <TextField
               label="First name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              name="firstName"
               fullWidth
+              autoComplete="given-name"
               required
             />
             <TextField
               label="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              name="lastName"
               fullWidth
+              autoComplete="family-name"
               required
             />
             <TextField
               type="email"
               label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
               fullWidth
+              autoComplete="email"
               required
             />
             <TextField
               type="password"
               label="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
               fullWidth
+              autoComplete="new-password"
               required
             />
             {error && (

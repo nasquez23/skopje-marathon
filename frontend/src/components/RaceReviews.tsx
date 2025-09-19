@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import type { RaceResponse } from "../types/race";
 import RaceReviewCard from "./cards/RaceReviewCard";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAddRaceReview, useRaceReviews } from "../hooks/use-races";
 import { useAuth } from "../hooks/use-auth";
 import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
@@ -28,16 +28,21 @@ export default function RaceReviews({ race }: { race: RaceResponse }) {
     race.status === "FINISHED"
   );
   const [rating, setRating] = useState<number | null>(5);
-  const [comment, setComment] = useState("");
+  const formRef = useRef<HTMLFormElement | null>(null);
   const addReview = useAddRaceReview(race.id ?? null);
   const { isAuthenticated } = useAuth();
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const entries = Object.fromEntries(new FormData(form).entries());
+    const comment = String(entries.comment ?? "");
+
     await addReview.mutateAsync(
       { rating: rating ?? 5, comment },
       {
         onSuccess: () => {
-          setComment("");
+          form.reset();
           setRating(5);
           refetch();
         },
@@ -57,22 +62,23 @@ export default function RaceReviews({ race }: { race: RaceResponse }) {
               {getErrorMessage(addReview.error)}
             </Alert>
           )}
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-            <Rating value={rating} onChange={(_, v) => setRating(v)} />
-            <TextField
-              fullWidth
-              placeholder="Share your experience…"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              onClick={onSubmit}
-              disabled={addReview.isPending || !comment}
-            >
-              Submit
-            </Button>
-          </Stack>
+          <Box component="form" onSubmit={onSubmit} ref={formRef}>
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+              <Rating value={rating} onChange={(_, v) => setRating(v)} />
+              <TextField
+                fullWidth
+                placeholder="Share your experience…"
+                name="comment"
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={addReview.isPending}
+              >
+                Submit
+              </Button>
+            </Stack>
+          </Box>
         </Paper>
       ) : race.status === "UPCOMING" ? (
         <Paper

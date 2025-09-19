@@ -18,8 +18,13 @@ export default function ParticipantStatus() {
 
   const [paymentOpen, setPaymentOpen] = useState(false);
 
-  const onCheck = async (e: FormEvent) => {
+  const onCheck = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const entries = Object.fromEntries(new FormData(form).entries());
+    const search = String(entries.search ?? "");
+    if (!search) return;
+    setSearchValue(search);
 
     setMessage(null);
     const res = await refetch();
@@ -36,7 +41,7 @@ export default function ParticipantStatus() {
       );
     if (d.status === "PENDING" || d.status === "FAILED") {
       setMessage(
-        `Not paid. Registration: ${d.registrationNumber ?? searchValue}`
+        `Not paid. Registration: ${d.registrationNumber ?? search}`
       );
     }
   };
@@ -48,8 +53,6 @@ export default function ParticipantStatus() {
     >
       <FormCard title="Check participant's status">
         <StatusForm
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
           onSubmit={onCheck}
           isSubmitting={isFetching}
           error={isError ? error : undefined}

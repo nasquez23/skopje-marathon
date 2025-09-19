@@ -23,25 +23,23 @@ export default function PaymentModal({
   participantId,
   onSuccess,
 }: PaymentModalProps) {
-  const [cardNumber, setCardNumber] = useState<string>("");
-  const [expMonth, setExpMonth] = useState<string>("");
-  const [expYear, setExpYear] = useState<string>("");
-  const [cardHolder, setCardHolder] = useState<string>("");
-  const [cvv, setCvv] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
   const [isPaymentSuccess, setIsPaymentSuccess] = useState<boolean>(false);
   const payMutation = useSimulatePayment(participantId);
 
-  const handlePay = async () => {
+  const handlePay = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!participantId) return;
     setMessage(null);
     try {
+      const form = e.currentTarget;
+      const entries = Object.fromEntries(new FormData(form).entries());
       const payload: PaymentSimulationRequest = {
-        cardNumber,
-        expMonth: parseInt(expMonth),
-        expYear: parseInt(expYear),
-        cardHolder,
-        cvv,
+        cardNumber: String(entries.cardNumber ?? ""),
+        expMonth: parseInt(String(entries.expMonth ?? "")),
+        expYear: parseInt(String(entries.expYear ?? "")),
+        cardHolder: String(entries.cardHolder ?? ""),
+        cvv: String(entries.cvv ?? ""),
       };
 
       const result = await payMutation.mutateAsync(payload);
@@ -68,64 +66,66 @@ export default function PaymentModal({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Demo cards: 4242424242424242 (valid), 4000000000000001 (invalid)
         </Typography>
-        <Grid container spacing={2}>
-          <Grid size={12}>
-            <TextField
-              fullWidth
-              label="Card Number"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              placeholder="4242424242424242"
-            />
+        <form onSubmit={handlePay} id="payment-form">
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <TextField
+                fullWidth
+                label="Card Number"
+                name="cardNumber"
+                placeholder="4242424242424242"
+                inputMode="numeric"
+              />
+            </Grid>
+            <Grid size={6}>
+              <TextField
+                fullWidth
+                label="Exp Month"
+                name="expMonth"
+                placeholder="12"
+                inputMode="numeric"
+              />
+            </Grid>
+            <Grid size={6}>
+              <TextField
+                fullWidth
+                label="Exp Year"
+                name="expYear"
+                placeholder="2026"
+                inputMode="numeric"
+              />
+            </Grid>
+            <Grid size={8}>
+              <TextField
+                fullWidth
+                label="Card Holder"
+                name="cardHolder"
+                placeholder="John Doe"
+              />
+            </Grid>
+            <Grid size={4}>
+              <TextField
+                fullWidth
+                label="CVV"
+                name="cvv"
+                placeholder="123"
+                inputMode="numeric"
+              />
+            </Grid>
           </Grid>
-          <Grid size={6}>
-            <TextField
-              fullWidth
-              label="Exp Month"
-              value={expMonth}
-              onChange={(e) => setExpMonth(e.target.value)}
-              placeholder="12"
-            />
-          </Grid>
-          <Grid size={6}>
-            <TextField
-              fullWidth
-              label="Exp Year"
-              value={expYear}
-              onChange={(e) => setExpYear(e.target.value)}
-              placeholder="2026"
-            />
-          </Grid>
-          <Grid size={8}>
-            <TextField
-              fullWidth
-              label="Card Holder"
-              value={cardHolder}
-              onChange={(e) => setCardHolder(e.target.value)}
-              placeholder="John Doe"
-            />
-          </Grid>
-          <Grid size={4}>
-            <TextField
-              fullWidth
-              label="CVV"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
-              placeholder="123"
-            />
-          </Grid>
-        </Grid>
-        {message && (
-          <Typography sx={{ mt: 1, color: isPaymentSuccess ? "green" : "red" }}>
-            {message}
-          </Typography>
-        )}
+          {message && (
+            <Typography sx={{ mt: 1, color: isPaymentSuccess ? "green" : "red" }}>
+              {message}
+            </Typography>
+          )}
+        </form>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={handlePay}
+          type="submit"
+          form="payment-form"
           disabled={
             payMutation.status === "pending" ||
             !participantId ||

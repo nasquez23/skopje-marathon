@@ -6,9 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { getErrorMessage, getErrorSeverity } from "../../utils/error-handler";
 
 interface StatusFormProps {
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isSubmitting?: boolean;
   error?: unknown;
   helperText?: string;
@@ -17,8 +15,6 @@ interface StatusFormProps {
 }
 
 export default function StatusForm({
-  searchValue,
-  onSearchChange,
   onSubmit,
   isSubmitting = false,
   error,
@@ -31,8 +27,7 @@ export default function StatusForm({
       <Stack spacing={2}>
         <TextField
           label="Email or Registration Number"
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
+          name="search"
           placeholder="Enter email or registration number"
           fullWidth
           disabled={disabled}
@@ -48,7 +43,7 @@ export default function StatusForm({
         <Button
           variant="contained"
           type="submit"
-          disabled={!searchValue || isSubmitting || disabled}
+          disabled={isSubmitting || disabled}
         >
           {isSubmitting ? "Checking..." : buttonText}
         </Button>

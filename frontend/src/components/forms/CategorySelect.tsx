@@ -25,6 +25,7 @@ export default function CategorySelect({
   return (
     <TextField
       select
+      name="category"
       label={label}
       value={value}
       onChange={(e) => onChange(e.target.value as Category | "")}
