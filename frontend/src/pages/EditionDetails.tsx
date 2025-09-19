@@ -43,7 +43,7 @@ export default function EditionDetails() {
   return (
     <Container maxWidth="md" sx={{ my: 6, minHeight: "50vh" }}>
       {race && (
-        <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+        <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 800 }}>
             {race.name} {race.edition}
           </Typography>
@@ -61,7 +61,7 @@ export default function EditionDetails() {
       )}
 
       {isAuthenticated && race?.status === "FINISHED" ? (
-        <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+        <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
             Leave a review
           </Typography>
@@ -108,7 +108,7 @@ export default function EditionDetails() {
         </Paper>
       ) : race?.status === "UPCOMING" ? (
         <Paper
-          variant="outlined"
+          elevation={2}
           sx={{ p: 3, borderRadius: 3, mb: 3, textAlign: "center" }}
         >
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
@@ -121,7 +121,7 @@ export default function EditionDetails() {
         </Paper>
       ) : (
         <Paper
-          variant="outlined"
+          elevation={2}
           sx={{ p: 3, borderRadius: 3, mb: 3, textAlign: "center" }}
         >
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>

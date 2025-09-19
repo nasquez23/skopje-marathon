@@ -22,7 +22,7 @@ export default function RaceReviews({
   if (!reviewsResponse) return null;
 
   return (
-    <Paper variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
+    <Paper elevation={2} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
         Reviews
       </Typography>
