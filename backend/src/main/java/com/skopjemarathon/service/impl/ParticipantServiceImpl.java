@@ -20,6 +20,8 @@ import com.skopjemarathon.repository.ParticipantRepository;
 import com.skopjemarathon.repository.PaymentRepository;
 import com.skopjemarathon.repository.RaceRepository;
 import com.skopjemarathon.service.ParticipantService;
+import com.skopjemarathon.exception.ParticipantNotFoundException;
+import com.skopjemarathon.exception.PaymentException;
 
 @Service
 @Transactional
@@ -75,7 +77,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             return participant;
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to register participant", e);
+            throw new PaymentException("Failed to register participant", e);
         }
     }
 

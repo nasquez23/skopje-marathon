@@ -19,6 +19,9 @@ import com.skopjemarathon.model.User;
 import com.skopjemarathon.repository.RaceRepository;
 import com.skopjemarathon.repository.RaceReviewRepository;
 import com.skopjemarathon.service.RaceService;
+import com.skopjemarathon.exception.RaceNotFoundException;
+import com.skopjemarathon.exception.ReviewNotAllowedException;
+import com.skopjemarathon.exception.DuplicateReviewException;
 
 @Service
 @Transactional
@@ -44,7 +47,7 @@ public class RaceServiceImpl implements RaceService {
     @Transactional(readOnly = true)
     public RaceResponse getRace(UUID id) {
         Race race = raceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Race not found with id: " + id));
+                .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + id));
         return mapToResponse(race);
     }
 
@@ -65,7 +68,7 @@ public class RaceServiceImpl implements RaceService {
     @Override
     public RaceResponse updateRace(UUID id, CreateRaceRequest request) {
         Race race = raceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Race not found with id: " + id));
+                .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + id));
 
         race.setName(request.name());
         race.setEdition(request.edition());
@@ -81,14 +84,14 @@ public class RaceServiceImpl implements RaceService {
     @Override
     public void addReview(UUID raceId, AddReviewRequest request, User user) {
         Race race = raceRepository.findById(raceId)
-                .orElseThrow(() -> new RuntimeException("Race not found with id: " + raceId));
+                .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + raceId));
 
         if (race.getStatus().name().equals("UPCOMING")) {
-            throw new RuntimeException("Cannot review upcoming races. Reviews are only allowed for finished races.");
+            throw new ReviewNotAllowedException("Cannot review upcoming races. Reviews are only allowed for finished races.");
         }
 
         if (reviewRepository.existsByRaceIdAndUserId(race.getId(), user.getId())) {
-            throw new RuntimeException("User has already reviewed this race");
+            throw new DuplicateReviewException("You have already reviewed this race");
         }
 
         RaceReview review = new RaceReview();
@@ -104,7 +107,7 @@ public class RaceServiceImpl implements RaceService {
     @Transactional(readOnly = true)
     public Page<RaceReviewResponse> listReviews(UUID raceId, int page, int size) {
         Race race = raceRepository.findById(raceId)
-                .orElseThrow(() -> new RuntimeException("Race not found with id: " + raceId));
+                .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + raceId));
 
         var reviews = race.getReviews();
         int from = Math.max(0, Math.min(page * size, reviews.size()));

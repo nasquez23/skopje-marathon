@@ -54,18 +54,8 @@ public class RaceController {
     @PostMapping("/{id}/reviews")
     public ResponseEntity<Void> addReview(@PathVariable UUID id, @RequestBody AddReviewRequest req,
             @AuthenticationPrincipal User user) {
-        try {
-            raceService.addReview(id, req, user);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            if (e.getMessage().contains("already reviewed")) {
-                return ResponseEntity.status(409).build();
-            }
-            if (e.getMessage().contains("Cannot review upcoming races")) {
-                return ResponseEntity.status(400).build();
-            }
-            return ResponseEntity.status(500).build();
-        }
+        raceService.addReview(id, req, user);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/reviews")

@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.skopjemarathon.dto.ErrorResponse;
+import com.skopjemarathon.exception.RaceNotFoundException;
+import com.skopjemarathon.exception.ParticipantNotFoundException;
+import com.skopjemarathon.exception.ReviewNotAllowedException;
+import com.skopjemarathon.exception.DuplicateReviewException;
+import com.skopjemarathon.exception.PaymentException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -56,6 +61,42 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("Registration failed",
                 "A user with this information already exists");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(RaceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRaceNotFound(RaceNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Race not found", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ParticipantNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleParticipantNotFound(ParticipantNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Participant not found", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ReviewNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleReviewNotAllowed(ReviewNotAllowedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Review not allowed", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(DuplicateReviewException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateReview(DuplicateReviewException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Duplicate review", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentException(PaymentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Payment error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Invalid request", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
