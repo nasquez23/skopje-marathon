@@ -2,6 +2,7 @@ package com.skopjemarathon.config;
 
 import java.util.List;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -32,7 +33,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/**").permitAll())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/races").permitAll()
+                        .requestMatchers("/api/races/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/races/*/reviews").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/races/*/reviews").authenticated()
+                        .requestMatchers("/api/participants").permitAll()
+                        .requestMatchers("/api/participants/status").permitAll()
+                        .requestMatchers("/api/participants/register").permitAll()
+                        .requestMatchers("/api/participants/*/pay").permitAll()
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
