@@ -83,6 +83,10 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RuntimeException("Race not found with id: " + raceId));
 
+        if (race.getStatus().name().equals("UPCOMING")) {
+            throw new RuntimeException("Cannot review upcoming races. Reviews are only allowed for finished races.");
+        }
+
         if (reviewRepository.existsByRaceIdAndUserId(race.getId(), user.getId())) {
             throw new RuntimeException("User has already reviewed this race");
         }

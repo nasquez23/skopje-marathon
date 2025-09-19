@@ -61,6 +61,9 @@ public class RaceController {
             if (e.getMessage().contains("already reviewed")) {
                 return ResponseEntity.status(409).build();
             }
+            if (e.getMessage().contains("Cannot review upcoming races")) {
+                return ResponseEntity.status(400).build();
+            }
             return ResponseEntity.status(500).build();
         }
     }

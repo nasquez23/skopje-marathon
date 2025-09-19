@@ -7,13 +7,13 @@ import Button from "@mui/material/Button";
 import { Alert, Box, Rating } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { AxiosError } from "axios";
 import {
   useAddRaceReview,
   useRaceDetails,
   useRaceReviews,
 } from "../hooks/use-races";
 import { useAuth } from "../hooks/use-auth";
-import { AxiosError } from "axios";
 import RaceReviews from "../components/RaceReviews";
 
 export default function EditionDetails() {
@@ -28,18 +28,20 @@ export default function EditionDetails() {
   const { isAuthenticated } = useAuth();
 
   const onSubmit = async () => {
-    try {
-      await addReview.mutateAsync({ rating: rating ?? 5, comment });
-      setComment("");
-      setRating(5);
-      refetch();
-    } catch (e: any) {
-      // handled by UI
-    }
+    await addReview.mutateAsync(
+      { rating: rating ?? 5, comment },
+      {
+        onSuccess: () => {
+          setComment("");
+          setRating(5);
+          refetch();
+        },
+      }
+    );
   };
 
   return (
-    <Container maxWidth="md" sx={{ my: 6 }}>
+    <Container maxWidth="md" sx={{ my: 6, minHeight: "50vh" }}>
       {race && (
         <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, mb: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 800 }}>
@@ -58,7 +60,7 @@ export default function EditionDetails() {
         </Paper>
       )}
 
-      {isAuthenticated ? (
+      {isAuthenticated && race?.status === "FINISHED" ? (
         <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, mb: 3 }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
             Leave a review
@@ -69,6 +71,8 @@ export default function EditionDetails() {
                 addReview.error instanceof AxiosError
                   ? addReview.error.response?.status === 409
                     ? "warning"
+                    : addReview.error.response?.status === 400
+                    ? "info"
                     : "error"
                   : "error"
               }
@@ -76,6 +80,8 @@ export default function EditionDetails() {
             >
               {(addReview.error as AxiosError).response?.status === 409
                 ? "You have already reviewed this edition."
+                : (addReview.error as AxiosError).response?.status === 400
+                ? "Cannot review upcoming races. Reviews are only allowed for finished races."
                 : (addReview.error as AxiosError).response?.status === 500
                 ? "Failed to submit review."
                 : (addReview.error as AxiosError).response?.status === 401
@@ -100,6 +106,19 @@ export default function EditionDetails() {
             </Button>
           </Stack>
         </Paper>
+      ) : race?.status === "UPCOMING" ? (
+        <Paper
+          variant="outlined"
+          sx={{ p: 3, borderRadius: 3, mb: 3, textAlign: "center" }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+            Reviews Coming Soon
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Reviews will be available after the race is completed. Check back
+            after the event!
+          </Typography>
+        </Paper>
       ) : (
         <Paper
           variant="outlined"
@@ -117,7 +136,9 @@ export default function EditionDetails() {
         </Paper>
       )}
 
-      <RaceReviews reviewsResponse={reviews} page={page} setPage={setPage} />
+      {race?.status === "FINISHED" && (
+        <RaceReviews reviewsResponse={reviews} page={page} setPage={setPage} />
+      )}
     </Container>
   );
 }
