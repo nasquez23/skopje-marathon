@@ -24,7 +24,7 @@ public class RegisterParticipantRequest {
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Age is required")
+    @NotNull(message = "Age is required")
     @Min(value = 16, message = "Age must be at least 16")
     private Integer age;
 

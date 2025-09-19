@@ -15,14 +15,15 @@ import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import com.skopjemarathon.enums.Category;
 import com.skopjemarathon.enums.PaymentStatus;
 import com.skopjemarathon.enums.RaceStatus;
+import com.skopjemarathon.exception.AgeRestrictionException;
+import com.skopjemarathon.exception.ParticipantNotFoundException;
+import com.skopjemarathon.exception.PaymentException;
 import com.skopjemarathon.model.Participant;
 import com.skopjemarathon.model.Payment;
 import com.skopjemarathon.repository.ParticipantRepository;
 import com.skopjemarathon.repository.PaymentRepository;
 import com.skopjemarathon.repository.RaceRepository;
 import com.skopjemarathon.service.ParticipantService;
-import com.skopjemarathon.exception.ParticipantNotFoundException;
-import com.skopjemarathon.exception.PaymentException;
 
 @Service
 @Transactional
@@ -62,6 +63,10 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public ParticipantResponse register(String firstName, String lastName, String email, int age, Category category) {
+        if (age < 16) {
+            throw new AgeRestrictionException("You must be at least 16 years old to register for this race");
+        }
+
         try {
             // Check if email already registered for current race
             raceRepository.findTopByStatusOrderByRaceDateDesc(RaceStatus.UPCOMING)
@@ -99,6 +104,7 @@ public class ParticipantServiceImpl implements ParticipantService {
             return mapToParticipantResponse(participant);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new PaymentException("Failed to register participant", e);
         }
     }
@@ -150,7 +156,9 @@ public class ParticipantServiceImpl implements ParticipantService {
                 participant.getFirstName(),
                 participant.getLastName(),
                 participant.getEmail(),
-                participant.getAge(), participant.getCategory(), participant.getRegistrationNumber(), participant.getStartNumber(), participant.getRace() != null ? participant.getRace().getEdition() : "N/A");
+                participant.getAge(), participant.getCategory(), participant.getRegistrationNumber(),
+                participant.getStartNumber(),
+                participant.getRace() != null ? participant.getRace().getEdition() : "N/A");
     }
 
     private static BigDecimal calculateFee(Category category) {

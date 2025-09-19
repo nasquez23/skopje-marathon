@@ -1,5 +1,8 @@
 package com.skopjemarathon.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.skopjemarathon.dto.ErrorResponse;
-import com.skopjemarathon.exception.RaceNotFoundException;
-import com.skopjemarathon.exception.ParticipantNotFoundException;
-import com.skopjemarathon.exception.ReviewNotAllowedException;
-import com.skopjemarathon.exception.DuplicateReviewException;
-import com.skopjemarathon.exception.PaymentException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -90,6 +85,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PaymentException.class)
     public ResponseEntity<ErrorResponse> handlePaymentException(PaymentException ex) {
         ErrorResponse errorResponse = new ErrorResponse("Payment error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(AgeRestrictionException.class)
+    public ResponseEntity<ErrorResponse> handleAgeRestriction(AgeRestrictionException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("Age restriction", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
