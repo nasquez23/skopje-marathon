@@ -11,4 +11,9 @@ export const API_ROUTES = {
     STATUS: "/participants/status",
     LIST: "/participants",
   },
+  RACES: {
+    LIST: "/races",
+    DETAILS: (id: string) => `/races/${id}`,
+    REVIEWS: (id: string) => `/races/${id}/reviews`,
+  },
 };

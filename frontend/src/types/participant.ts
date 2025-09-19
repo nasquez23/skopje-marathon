@@ -19,6 +19,7 @@ export interface ParticipantResponse {
   category: Category;
   registrationNumber: string;
   startNumber?: string | null;
+  raceEdition: string;
 }
 
 export interface ParticipantStatusResponse {

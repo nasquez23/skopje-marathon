@@ -24,6 +24,7 @@ export default function Header() {
     { label: "Home", to: PATHS.HOME },
     { label: "Participants", to: PATHS.PARTICIPANTS },
     { label: "Check Status", to: PATHS.PARTICIPANT_STATUS },
+    { label: "Editions", to: PATHS.EDITIONS },
   ];
 
   return (
@@ -147,7 +148,7 @@ export default function Header() {
           </Stack>
           <Divider sx={{ my: 2 }} />
           {!isAuthenticated ? (
-            <Stack direction="row" spacing={1}>
+            <Stack spacing={2}>
               <Button
                 fullWidth
                 variant="outlined"

@@ -20,8 +20,10 @@ export default function ParticipantCard({
             {participant.firstName} {participant.lastName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {formatCategory(participant.category)} • Start #
-            {participant.startNumber ?? "N/A"}
+            {formatCategory(participant.category)} • {participant.raceEdition}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Start #{participant.startNumber ?? "N/A"}
           </Typography>
         </CardContent>
       </Card>
