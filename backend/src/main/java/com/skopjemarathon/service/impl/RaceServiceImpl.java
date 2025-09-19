@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,7 @@ public class RaceServiceImpl implements RaceService {
     @Transactional(readOnly = true)
     public List<RaceResponse> listRaces() {
         return raceRepository.findAllByOrderByRaceDateDesc().stream()
-                .map(this::mapToResponse)
+                .map(this::mapToRaceResponse)
                 .toList();
     }
 
@@ -48,7 +47,7 @@ public class RaceServiceImpl implements RaceService {
     public RaceResponse getRace(UUID id) {
         Race race = raceRepository.findById(id)
                 .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + id));
-        return mapToResponse(race);
+        return mapToRaceResponse(race);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class RaceServiceImpl implements RaceService {
         race.setStatus(request.status());
 
         race = raceRepository.save(race);
-        return mapToResponse(race);
+        return mapToRaceResponse(race);
     }
 
     @Override
@@ -78,7 +77,7 @@ public class RaceServiceImpl implements RaceService {
         race.setStatus(request.status());
 
         race = raceRepository.save(race);
-        return mapToResponse(race);
+        return mapToRaceResponse(race);
     }
 
     @Override
@@ -107,24 +106,13 @@ public class RaceServiceImpl implements RaceService {
     @Override
     @Transactional(readOnly = true)
     public Page<RaceReviewResponse> listReviews(UUID raceId, int page, int size) {
-        Race race = raceRepository.findById(raceId)
+        raceRepository.findById(raceId)
                 .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + raceId));
 
-        List<RaceReview> reviews = race.getReviews();
-        int from = Math.max(0, Math.min(page * size, reviews.size()));
-        int to = Math.max(from, Math.min(from + size, reviews.size()));
+        Page<RaceReview> reviewPage = reviewRepository.findByRaceId(raceId,
+                PageRequest.of(Math.max(page, 0), Math.max(size, 1)));
 
-        List<RaceReviewResponse> slice = reviews.subList(from, to).stream()
-                .map(rr -> new RaceReviewResponse(
-                        rr.getId().toString(),
-                        rr.getRating(),
-                        rr.getComment(),
-                        rr.getCreatedAt(),
-                        rr.getUser() != null ? rr.getUser().getFirstName() : "Anonymous",
-                        rr.getUser() != null ? rr.getUser().getLastName() : ""))
-                .toList();
-
-        return new PageImpl<>(slice, PageRequest.of(page, size), reviews.size());
+        return reviewPage.map(this::mapToReviewResponse);
     }
 
     @Override
@@ -133,13 +121,10 @@ public class RaceServiceImpl implements RaceService {
         return reviewRepository.existsByRaceIdAndUserId(raceId, userId);
     }
 
-    private RaceResponse mapToResponse(Race race) {
-        List<RaceReview> reviews = race.getReviews();
-        long count = reviews == null ? 0 : reviews.size();
-        double avg = 0.0;
-        if (count > 0 && reviews != null) {
-            avg = reviews.stream().mapToInt(RaceReview::getRating).average().orElse(0.0);
-        }
+    private RaceResponse mapToRaceResponse(Race race) {
+        long count = reviewRepository.countByRaceId(race.getId());
+        Double avgObj = reviewRepository.averageRatingByRaceId(race.getId());
+        double avg = avgObj == null ? 0.0 : avgObj;
 
         return new RaceResponse(
                 race.getId().toString(),
@@ -151,5 +136,15 @@ public class RaceServiceImpl implements RaceService {
                 race.getStatus(),
                 avg,
                 count);
+    }
+
+    private RaceReviewResponse mapToReviewResponse(RaceReview review) {
+        return new RaceReviewResponse(
+                review.getId().toString(),
+                review.getRating(),
+                review.getComment(),
+                review.getCreatedAt(),
+                review.getUser() != null ? review.getUser().getFirstName() : "Anonymous",
+                review.getUser() != null ? review.getUser().getLastName() : "");
     }
 }

@@ -21,6 +21,8 @@ import com.skopjemarathon.enums.PaymentStatus;
 import com.skopjemarathon.service.ParticipantService;
 import com.skopjemarathon.service.PaymentService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/participants")
 public class ParticipantController {
@@ -34,7 +36,7 @@ public class ParticipantController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ParticipantResponse> register(@RequestBody RegisterParticipantRequest req) {
+    public ResponseEntity<ParticipantResponse> register(@Valid @RequestBody RegisterParticipantRequest req) {
         return ResponseEntity.ok(participantService.register(req.getFirstName(), req.getLastName(), req.getEmail(),
                 req.getAge(), req.getCategory()));
     }
