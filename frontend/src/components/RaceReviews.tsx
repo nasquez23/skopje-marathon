@@ -28,9 +28,15 @@ export default function RaceReviews({
       </Typography>
       <Divider sx={{ mb: 2 }} />
       <Stack spacing={2}>
-        {reviewsResponse?.content.map((review) => (
-          <RaceReviewCard key={review.id} rv={review} />
-        ))}
+        {reviewsResponse.content.length === 0 ? (
+          <Typography textAlign="center" variant="body1" color="text.secondary" sx={{ pt: 2 }}>
+            No reviews yet
+          </Typography>
+        ) : (
+          reviewsResponse?.content.map((review) => (
+            <RaceReviewCard key={review.id} rv={review} />
+          ))
+        )}
       </Stack>
       {reviewsResponse && reviewsResponse.totalPages > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>

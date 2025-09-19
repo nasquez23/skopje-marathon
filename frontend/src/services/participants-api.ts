@@ -45,7 +45,7 @@ export const listPaidParticipants = async (
   name?: string,
   category?: Category,
   page: number = 0,
-  size: number = 12
+  size: number = 10
 ): Promise<PageResponse<ParticipantResponse>> => {
   const params = new URLSearchParams();
   if (name) params.append("name", name);

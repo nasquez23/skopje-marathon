@@ -35,7 +35,7 @@ public class RaceServiceImpl implements RaceService {
     @Override
     @Transactional(readOnly = true)
     public List<RaceResponse> listRaces() {
-        return raceRepository.findAll().stream()
+        return raceRepository.findAllByOrderByRaceDateDesc().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -111,7 +111,9 @@ public class RaceServiceImpl implements RaceService {
                         rr.getId().toString(),
                         rr.getRating(),
                         rr.getComment(),
-                        rr.getCreatedAt()))
+                        rr.getCreatedAt(),
+                        rr.getUser() != null ? rr.getUser().getFirstName() : "Anonymous",
+                        rr.getUser() != null ? rr.getUser().getLastName() : ""))
                 .toList();
 
         return new PageImpl<>(slice, PageRequest.of(page, size), reviews.size());
@@ -127,7 +129,7 @@ public class RaceServiceImpl implements RaceService {
         var reviews = race.getReviews();
         long count = reviews == null ? 0 : reviews.size();
         double avg = 0.0;
-        if (count > 0) {
+        if (count > 0 && reviews != null) {
             avg = reviews.stream().mapToInt(RaceReview::getRating).average().orElse(0.0);
         }
 

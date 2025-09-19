@@ -15,6 +15,8 @@ export interface RaceReviewResponse {
   rating: number;
   comment: string;
   createdAt: string;
+  userFirstName: string;
+  userLastName: string;
 }
 
 export interface AddReviewRequest {

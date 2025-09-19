@@ -6,5 +6,7 @@ public record RaceReviewResponse(
                 String id,
                 int rating,
                 String comment,
-                LocalDateTime createdAt) {
+                LocalDateTime createdAt,
+                String userFirstName,
+                String userLastName) {
 }
