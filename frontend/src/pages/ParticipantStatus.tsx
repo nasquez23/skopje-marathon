@@ -4,13 +4,17 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { Alert, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import PaymentModal from "../components/PaymentModal";
 import { useState } from "react";
 import { useParticipantStatus } from "../hooks/use-participant-status";
+import type { PaymentStatus } from "../types/participant";
+import PaymentStatusChip from "../components/PaymentStatusChip";
 
 export default function ParticipantStatus() {
   const [searchValue, setSearchValue] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<PaymentStatus | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [participantId, setParticipantId] = useState<string | null>(null);
   const { refetch, isFetching } = useParticipantStatus(searchValue);
@@ -39,28 +43,59 @@ export default function ParticipantStatus() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ my: 8, minHeight: "40vh" }}>
-      <Paper variant="outlined" sx={{ p: 4, borderRadius: 3 }}>
+    <Container
+      maxWidth="md"
+      sx={{ my: 8, minHeight: "40vh", width: "50%", mx: "auto" }}
+    >
+      <Paper
+        elevation={5}
+        sx={{ p: 5 }}
+      >
         <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
-          Check participant
+          Check participant's status
         </Typography>
         <Stack spacing={2}>
           <TextField
             label="Email or Registration Number"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchValue && !isFetching) onCheck();
+            }}
             placeholder="Enter email or registration number"
             fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+            helperText="Example: jane.doe@email.com or REG-1234ABCD"
           />
           <Button
             variant="contained"
             onClick={onCheck}
             disabled={!searchValue || isFetching}
           >
-            Check
+            {isFetching ? "Checking..." : "Check"}
           </Button>
-          {status && <Typography>Status: {status}</Typography>}
-          {message && <Typography>{message}</Typography>}
+
+          {status && <PaymentStatusChip status={status} />}
+
+          {message && (
+            <Alert
+              severity={
+                status === "PAID"
+                  ? "success"
+                  : status === "FAILED"
+                  ? "error"
+                  : "info"
+              }
+            >
+              {message}
+            </Alert>
+          )}
         </Stack>
 
         {status === "PENDING" || status === "FAILED" ? (

@@ -14,6 +14,7 @@ import PATHS from "../constants/paths";
 import { Link as RouterLink } from "react-router-dom";
 import { useParticipants } from "../hooks/use-participants";
 import type { Category } from "../types/participant";
+import { formatCategory } from "../lib/format";
 import ParticipantCard from "../components/ParticipantCard";
 
 export default function Participants() {
@@ -28,10 +29,11 @@ export default function Participants() {
     setPage,
     loading,
     error,
+    totalElements,
   } = useParticipants();
 
   return (
-    <Container maxWidth="lg" sx={{ my: 6 }}>
+    <Container maxWidth="xl" sx={{ my: 6, width: "95%", mx: "auto" }}>
       <Box
         sx={{
           display: "flex",
@@ -49,6 +51,7 @@ export default function Participants() {
         <Button
           variant="contained"
           color="primary"
+          size="large"
           sx={{
             borderRadius: 9999,
             "&:hover": { color: "white" },
@@ -60,7 +63,7 @@ export default function Participants() {
         </Button>
       </Box>
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <TextField
             fullWidth
             label="Search by name"
@@ -68,7 +71,7 @@ export default function Participants() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </Grid>
-        <Grid size={2}>
+        <Grid size={{ xs: 12, md: 2 }}>
           <TextField
             select
             fullWidth
@@ -77,10 +80,12 @@ export default function Participants() {
             onChange={(e) => setCategory(e.target.value as Category | "")}
           >
             <MenuItem value="">All</MenuItem>
-            <MenuItem value="_5KM">5 km</MenuItem>
-            <MenuItem value="_10KM">10 km</MenuItem>
-            <MenuItem value="HALF_MARATHON">Half Marathon</MenuItem>
-            <MenuItem value="MARATHON">Marathon</MenuItem>
+            <MenuItem value="_5KM">{formatCategory("_5KM")}</MenuItem>
+            <MenuItem value="_10KM">{formatCategory("_10KM")}</MenuItem>
+            <MenuItem value="HALF_MARATHON">
+              {formatCategory("HALF_MARATHON")}
+            </MenuItem>
+            <MenuItem value="MARATHON">{formatCategory("MARATHON")}</MenuItem>
           </TextField>
         </Grid>
       </Grid>
@@ -96,11 +101,19 @@ export default function Participants() {
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container spacing={2}>
-          {participants.map((p) => (
-            <ParticipantCard key={p.id} participant={p} />
-          ))}
-        </Grid>
+        <>
+          <Typography
+            variant="subtitle2"
+            sx={{ color: "text.secondary", mb: 1 }}
+          >
+            Showing {totalElements} {totalElements === 1 ? "result" : "results"}
+          </Typography>
+          <Grid container spacing={2}>
+            {participants.map((p) => (
+              <ParticipantCard key={p.id} participant={p} />
+            ))}
+          </Grid>
+        </>
       )}
 
       {!loading && participants.length === 0 && (

@@ -32,7 +32,7 @@ export default function Login() {
 
   return (
     <Container maxWidth="sm" sx={{ my: 8 }}>
-      <Paper variant="outlined" sx={{ p: 4, borderRadius: 3 }}>
+      <Paper elevation={5} sx={{ p: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
           Sign in
         </Typography>
