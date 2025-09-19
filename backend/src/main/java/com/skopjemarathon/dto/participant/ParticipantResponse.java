@@ -10,5 +10,6 @@ public record ParticipantResponse(
         int age,
         Category category,
         String registrationNumber,
-        String startNumber) {
+        String startNumber,
+        String raceEdition) {
 }

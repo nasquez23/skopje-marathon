@@ -36,12 +36,11 @@ public class ParticipantController {
 
     @PostMapping("/register")
     public ResponseEntity<ParticipantResponse> register(@RequestBody RegisterParticipantRequest req) {
-        Participant p = participantService.register(req.getFirstName(), req.getLastName(), req.getEmail(), req.getAge(),
-                req.getCategory());
+        Participant p = participantService.register(req.getFirstName(), req.getLastName(), req.getEmail(), req.getAge(), req.getCategory());
 
         return ResponseEntity.ok(new ParticipantResponse(
                 p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(), p.getCategory(),
-                p.getRegistrationNumber(), p.getStartNumber()));
+                p.getRegistrationNumber(), p.getStartNumber(), p.getRace() != null ? p.getRace().getEdition() : "N/A"));
     }
 
     @PostMapping("/{id}/pay")
@@ -78,7 +77,8 @@ public class ParticipantController {
         Page<ParticipantResponse> list = participantService.listPaid(name, category, page, size)
                 .map(p -> new ParticipantResponse(
                         p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(),
-                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber()));
+                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber(), 
+                        p.getRace() != null ? p.getRace().getEdition() : "N/A"));
         return ResponseEntity.ok(list);
     }
 }

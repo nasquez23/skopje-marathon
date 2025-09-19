@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import com.skopjemarathon.enums.Category;
 import com.skopjemarathon.enums.PaymentStatus;
+import com.skopjemarathon.enums.RaceStatus;
 import com.skopjemarathon.model.Participant;
 import com.skopjemarathon.model.Payment;
 import com.skopjemarathon.repository.ParticipantRepository;
 import com.skopjemarathon.repository.PaymentRepository;
+import com.skopjemarathon.repository.RaceRepository;
 import com.skopjemarathon.service.ParticipantService;
 
 @Service
@@ -25,18 +27,27 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private final ParticipantRepository participantRepository;
     private final PaymentRepository paymentRepository;
+    private final RaceRepository raceRepository;
 
-    public ParticipantServiceImpl(ParticipantRepository participantRepository, PaymentRepository paymentRepository) {
+    public ParticipantServiceImpl(ParticipantRepository participantRepository, PaymentRepository paymentRepository,
+            RaceRepository raceRepository) {
         this.participantRepository = participantRepository;
         this.paymentRepository = paymentRepository;
+        this.raceRepository = raceRepository;
     }
 
     @Override
     public Participant register(String firstName, String lastName, String email, int age, Category category) {
         try {
-            participantRepository.findByEmail(email).ifPresent(p -> {
-                throw new IllegalArgumentException("Email already registered");
-            });
+            // Check if email already registered for current race
+            raceRepository.findTopByStatusOrderByRaceDateDesc(RaceStatus.UPCOMING)
+                    .ifPresent(race -> {
+                        participantRepository.findByEmail(email).ifPresent(p -> {
+                            if (p.getRace() != null && p.getRace().getId().equals(race.getId())) {
+                                throw new IllegalArgumentException("Email already registered for this race");
+                            }
+                        });
+                    });
 
             Participant participant = new Participant();
             participant.setFirstName(firstName);
@@ -45,6 +56,10 @@ public class ParticipantServiceImpl implements ParticipantService {
             participant.setAge(age);
             participant.setCategory(category);
             participant.setRegistrationNumber(generateRegistrationNumber());
+
+            // Attach participant to current active race edition if present
+            raceRepository.findTopByStatusOrderByRaceDateDesc(RaceStatus.UPCOMING)
+                    .ifPresent(participant::setRace);
 
             participant = participantRepository.save(participant);
 

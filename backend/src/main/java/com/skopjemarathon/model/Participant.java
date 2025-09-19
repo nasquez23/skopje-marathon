@@ -51,7 +51,7 @@ public class Participant extends BaseEntity {
     @OneToOne(mappedBy = "participant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Payment payment;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "race_id")
+    private Race race;
 }
