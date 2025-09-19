@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.skopjemarathon.dto.participant.ParticipantResponse;
 import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import com.skopjemarathon.enums.Category;
 import com.skopjemarathon.enums.PaymentStatus;
@@ -39,7 +40,28 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     @Override
-    public Participant register(String firstName, String lastName, String email, int age, Category category) {
+    public ParticipantStatusResponse checkStatus(String search) {
+        // Check if it's an email
+        if (search.contains("@")) {
+            Optional<ParticipantStatusResponse> status = getStatusByEmail(search);
+            if (status.isPresent()) {
+                return status.get();
+            } else {
+                throw new ParticipantNotFoundException("Participant not found with email: " + search);
+            }
+        } else {
+            // Assume it's a registration number
+            Optional<ParticipantStatusResponse> status = getStatusByRegistration(search);
+            if (status.isPresent()) {
+                return status.get();
+            } else {
+                throw new ParticipantNotFoundException("Participant not found with registration number: " + search);
+            }
+        }
+    }
+
+    @Override
+    public ParticipantResponse register(String firstName, String lastName, String email, int age, Category category) {
         try {
             // Check if email already registered for current race
             raceRepository.findTopByStatusOrderByRaceDateDesc(RaceStatus.UPCOMING)
@@ -74,7 +96,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 
             participant.setPayment(payment);
 
-            return participant;
+            return mapToParticipantResponse(participant);
 
         } catch (Exception e) {
             throw new PaymentException("Failed to register participant", e);
@@ -120,6 +142,15 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     private static String generateRegistrationNumber() {
         return "REG-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private static ParticipantResponse mapToParticipantResponse(Participant participant) {
+        return new ParticipantResponse(
+                participant.getId().toString(),
+                participant.getFirstName(),
+                participant.getLastName(),
+                participant.getEmail(),
+                participant.getAge(), participant.getCategory(), participant.getRegistrationNumber(), participant.getStartNumber(), participant.getRace() != null ? participant.getRace().getEdition() : "N/A");
     }
 
     private static BigDecimal calculateFee(Category category) {

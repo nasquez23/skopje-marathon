@@ -18,7 +18,6 @@ import com.skopjemarathon.dto.participant.PaymentRequest;
 import com.skopjemarathon.dto.participant.RegisterParticipantRequest;
 import com.skopjemarathon.enums.Category;
 import com.skopjemarathon.enums.PaymentStatus;
-import com.skopjemarathon.model.Participant;
 import com.skopjemarathon.service.ParticipantService;
 import com.skopjemarathon.service.PaymentService;
 
@@ -36,11 +35,8 @@ public class ParticipantController {
 
     @PostMapping("/register")
     public ResponseEntity<ParticipantResponse> register(@RequestBody RegisterParticipantRequest req) {
-        Participant p = participantService.register(req.getFirstName(), req.getLastName(), req.getEmail(), req.getAge(), req.getCategory());
-
-        return ResponseEntity.ok(new ParticipantResponse(
-                p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(), p.getCategory(),
-                p.getRegistrationNumber(), p.getStartNumber(), p.getRace() != null ? p.getRace().getEdition() : "N/A"));
+        return ResponseEntity.ok(participantService.register(req.getFirstName(), req.getLastName(), req.getEmail(),
+                req.getAge(), req.getCategory()));
     }
 
     @PostMapping("/{id}/pay")
@@ -51,21 +47,7 @@ public class ParticipantController {
 
     @GetMapping("/status")
     public ResponseEntity<ParticipantStatusResponse> status(@RequestParam String search) {
-        // Check if it looks like an email (contains @)
-        if (search.contains("@")) {
-            var status = participantService.getStatusByEmail(search);
-            if (status.isPresent()) {
-                return ResponseEntity.ok(status.get());
-            }
-        } else {
-            // Assume it's a registration number
-            var status = participantService.getStatusByRegistration(search);
-            if (status.isPresent()) {
-                return ResponseEntity.ok(status.get());
-            }
-        }
-
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(participantService.checkStatus(search));
     }
 
     @GetMapping
@@ -77,7 +59,7 @@ public class ParticipantController {
         Page<ParticipantResponse> list = participantService.listPaid(name, category, page, size)
                 .map(p -> new ParticipantResponse(
                         p.getId().toString(), p.getFirstName(), p.getLastName(), p.getEmail(), p.getAge(),
-                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber(), 
+                        p.getCategory(), p.getRegistrationNumber(), p.getStartNumber(),
                         p.getRace() != null ? p.getRace().getEdition() : "N/A"));
         return ResponseEntity.ok(list);
     }

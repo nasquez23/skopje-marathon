@@ -1,15 +1,19 @@
 package com.skopjemarathon.service;
 
 import org.springframework.data.domain.Page;
+
 import java.util.Optional;
 
+import com.skopjemarathon.dto.participant.ParticipantResponse;
 import com.skopjemarathon.dto.participant.ParticipantStatusResponse;
 import com.skopjemarathon.enums.Category;
 import com.skopjemarathon.model.Participant;
 
 public interface ParticipantService {
 
-    Participant register(String firstName, String lastName, String email, int age, Category category);
+    ParticipantStatusResponse checkStatus(String search);
+
+    ParticipantResponse register(String firstName, String lastName, String email, int age, Category category);
 
     Optional<ParticipantStatusResponse> getStatusByEmail(String email);
 

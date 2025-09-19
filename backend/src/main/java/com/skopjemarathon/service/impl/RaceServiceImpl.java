@@ -87,7 +87,8 @@ public class RaceServiceImpl implements RaceService {
                 .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + raceId));
 
         if (race.getStatus().name().equals("UPCOMING")) {
-            throw new ReviewNotAllowedException("Cannot review upcoming races. Reviews are only allowed for finished races.");
+            throw new ReviewNotAllowedException(
+                    "Cannot review upcoming races. Reviews are only allowed for finished races.");
         }
 
         if (reviewRepository.existsByRaceIdAndUserId(race.getId(), user.getId())) {
@@ -109,11 +110,11 @@ public class RaceServiceImpl implements RaceService {
         Race race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new RaceNotFoundException("Race not found with id: " + raceId));
 
-        var reviews = race.getReviews();
+        List<RaceReview> reviews = race.getReviews();
         int from = Math.max(0, Math.min(page * size, reviews.size()));
         int to = Math.max(from, Math.min(from + size, reviews.size()));
 
-        var slice = reviews.subList(from, to).stream()
+        List<RaceReviewResponse> slice = reviews.subList(from, to).stream()
                 .map(rr -> new RaceReviewResponse(
                         rr.getId().toString(),
                         rr.getRating(),
@@ -133,7 +134,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     private RaceResponse mapToResponse(Race race) {
-        var reviews = race.getReviews();
+        List<RaceReview> reviews = race.getReviews();
         long count = reviews == null ? 0 : reviews.size();
         double avg = 0.0;
         if (count > 0 && reviews != null) {
