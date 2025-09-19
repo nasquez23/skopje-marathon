@@ -8,6 +8,31 @@ import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 
 const theme = createTheme({
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 600,
+    h1: {
+      fontWeight: 800,
+    },
+    h2: {
+      fontWeight: 700,
+    },
+    h3: {
+      fontWeight: 700,
+    },
+    h4: {
+      fontWeight: 600,
+    },
+    h5: {
+      fontWeight: 600,
+    },
+    h6: {
+      fontWeight: 600,
+    },
+  },
   palette: {
     primary: { main: "#3a3d90", contrastText: "#ffffff" },
     secondary: { main: "#ff7535", contrastText: "#ffffff" },
