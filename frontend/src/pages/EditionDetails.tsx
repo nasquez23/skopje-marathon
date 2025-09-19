@@ -5,9 +5,8 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Alert, Box, Rating } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
-import { AxiosError } from "axios";
 import {
   useAddRaceReview,
   useRaceDetails,
@@ -15,6 +14,7 @@ import {
 } from "../hooks/use-races";
 import { useAuth } from "../hooks/use-auth";
 import RaceReviews from "../components/RaceReviews";
+import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
 
 export default function EditionDetails() {
   const { id } = useParams();
@@ -66,27 +66,8 @@ export default function EditionDetails() {
             Leave a review
           </Typography>
           {addReview.isError && (
-            <Alert
-              severity={
-                addReview.error instanceof AxiosError
-                  ? addReview.error.response?.status === 409
-                    ? "warning"
-                    : addReview.error.response?.status === 400
-                    ? "info"
-                    : "error"
-                  : "error"
-              }
-              sx={{ mb: 2 }}
-            >
-              {(addReview.error as AxiosError).response?.status === 409
-                ? "You have already reviewed this edition."
-                : (addReview.error as AxiosError).response?.status === 400
-                ? "Cannot review upcoming races. Reviews are only allowed for finished races."
-                : (addReview.error as AxiosError).response?.status === 500
-                ? "Failed to submit review."
-                : (addReview.error as AxiosError).response?.status === 401
-                ? "You must be logged in to leave a review."
-                : "Failed to submit review."}
+            <Alert severity={getErrorSeverity(addReview.error)} sx={{ mb: 2 }}>
+              {getErrorMessage(addReview.error)}
             </Alert>
           )}
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
@@ -130,7 +111,7 @@ export default function EditionDetails() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Sign in to share your experience and help other runners!
           </Typography>
-          <Button variant="contained" href="/login">
+          <Button component={Link} variant="contained" to="/login">
             Sign In
           </Button>
         </Paper>

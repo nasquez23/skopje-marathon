@@ -16,6 +16,7 @@ import { useParticipants } from "../hooks/use-participants";
 import type { Category } from "../types/participant";
 import { formatCategory } from "../lib/format";
 import ParticipantCard from "../components/ParticipantCard";
+import { getErrorMessage, getErrorSeverity } from "../utils/error-handler";
 
 export default function Participants() {
   const {
@@ -29,6 +30,7 @@ export default function Participants() {
     setPage,
     loading,
     error,
+    isError,
     totalElements,
   } = useParticipants();
 
@@ -90,9 +92,9 @@ export default function Participants() {
         </Grid>
       </Grid>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+      {isError && (
+        <Alert severity={getErrorSeverity(error)} sx={{ mb: 2 }}>
+          {getErrorMessage(error)}
         </Alert>
       )}
 

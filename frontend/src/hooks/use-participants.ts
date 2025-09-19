@@ -21,7 +21,7 @@ export function useParticipants() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const { data, isLoading, error } = useQuery<
+  const { data, isLoading, error, isError } = useQuery<
     PageResponse<ParticipantResponse>,
     unknown
   >({
@@ -47,6 +47,7 @@ export function useParticipants() {
     totalElements: data?.totalElements ?? 0,
     setPage,
     loading: isLoading,
+    isError,
     error:
       error && (error as any)?.response?.data?.message
         ? (error as any).response.data.message
